@@ -8,6 +8,7 @@ public class Proyecto2_Programacion2Q1 {
         createFile();
         PgInicial pgInicial = new PgInicial();
         pgInicial.frame.setVisible(true);
+        //hola
     }
     
 }
