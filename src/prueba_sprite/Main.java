@@ -11,15 +11,15 @@ import javax.swing.SwingUtilities;
  *
  * @author 50488
  */
-public class Main {
-    public static void main(String[] args) {
-       SwingUtilities.invokeLater(() -> {
-          menu.getInstance().setVisible(true);
-        });
-    }
-    
-    
-}
+//public class Main {
+//    public static void main(String[] args) {
+//       SwingUtilities.invokeLater(() -> {
+//          menu.getInstance().setVisible(true);
+//        });
+//    }
+//    
+//    
+//}
 /*
 JFrame window  = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

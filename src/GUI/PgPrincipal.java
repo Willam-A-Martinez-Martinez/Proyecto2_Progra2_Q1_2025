@@ -25,7 +25,7 @@ import javax.swing.event.ChangeEvent;
 import prueba_sprite.menu;
 
 public class PgPrincipal extends Grafico{
-    JFrame frame= new JFrame();
+    public JFrame frame= new JFrame();
     JLabel lblPerfil       = new JLabel();
     private JLabel fondo = new JLabel();
     private JLabel titulo= new JLabel();
@@ -134,10 +134,9 @@ public class PgPrincipal extends Grafico{
             ranking();
         });
         btnIniciarPartida.addActionListener((ActionEvent e)->{
-             SwingUtilities.invokeLater(() -> {
-          menu.getInstance().setVisible(true);
+          menu fMenu = new menu();
+          fMenu.setVisible(true);
           frame.dispose();
-        });
         });
         
         btnSalir.addActionListener((ActionEvent e) -> {
