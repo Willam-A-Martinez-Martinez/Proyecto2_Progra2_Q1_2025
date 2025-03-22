@@ -13,11 +13,11 @@ public class Datos implements Serializable {
     private Duration tiempoJugado;
     private transient Instant juegoEmpieza;
     
-    public Datos(String NombreUser, String NombreCompleto, String contraseña, String avatar) {
+    public Datos(String NombreUser, String NombreCompleto, String contraseña) {
         this.nombreUser = NombreUser;
         this.nombreCompleto = NombreCompleto;
         this.contraseña = contraseña;
-        this.avatar=avatar;
+        avatar="";
         this.fechaRegistro = Calendar.getInstance();
         this.ultimaSesion = Calendar.getInstance();
         this.tiempoJugado = Duration.ZERO;

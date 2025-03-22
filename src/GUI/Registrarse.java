@@ -125,27 +125,24 @@ public class Registrarse extends Grafico{
             String nombreUser = nombreUserTxtF.getText().trim();
             String nombreC = nombreCTxtF.getText().trim();
             String contra = new String(contraseñaTxtF.getPassword()).trim();
-            
 
-            System.out.println("DEBUG: Username=[" + nombreUser + "], Full Name=[" + nombreC + "], Password=[" + contra + "]"+", Avatar ="+rutaAvatar);
+            if (!nombreUser.equals("") && !nombreC.equals("") && !contra.equals("")) {
+                if (pgInicial.mUser.agregarUsuario(nombreUser, nombreC, contra)) {
+                    pgInicial.mPreferencia.guardarPreferenciasUser(pgInicial.locale.toString(), pgInicial.music.getVolumen1(), nombreC);
+                    // Save the image first
+                    String avatarPath = pgInicial.mUser.guardarImagen(rutaAvatar, nombreC);
 
-            if(!nombreUser.equals("") || !nombreC.equals("") || !contra.equals("")){
-                if(pgInicial.mUser.agregarUsuario(nombreUser, nombreC, contra, rutaAvatar)){
-                    
-                    System.out.println("Ruta de avatar despues de acceder a registrarse: "+rutaAvatar);
-                    
-                   PgPrincipal pgP = new PgPrincipal(pgInicial);
-                   pgP.frame.setVisible(true);
-                   pgInicial.logUser = pgInicial.mUser.cargaUsuario(nombreC);
-                   System.out.println("Ruta que aparece con el user guardado: "+pgInicial.logUser.getAvatar());
+                    // Then load the user (which will now include the updated avatar path)
+                    pgInicial.logUser = pgInicial.mUser.cargaUsuario(nombreC);
 
-                   if(pgInicial.logUser==null){
-                        System.out.println("Log user es null");
-                   }else{
-                       System.out.println("Contra de user: "+pgInicial.logUser.getContraseña());
-                       System.out.println("Nombre completo de usar: "+pgInicial.logUser.getNombreCompleto());
-                   }
-                   frame.dispose();
+                    // Debug: Verify the avatar path was set correctly
+                    if (pgInicial.logUser != null) {
+                        System.out.println("Avatar cargado: " + pgInicial.logUser.getAvatar());
+                    }
+
+                    PgPrincipal pgP = new PgPrincipal(pgInicial);
+                    pgP.frame.setVisible(true);
+                    frame.dispose();
                 }
                 nombreUserTxtF.setText("");
                 nombreCTxtF.setText("");

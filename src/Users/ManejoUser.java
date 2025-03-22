@@ -25,10 +25,11 @@ import java.util.logging.Logger;
 public class ManejoUser {
     private final String DIRECTORIO_USUARIOS = "Usuarios";
     private final String ARCHIVO_DATO_USUARIO = "datos.dat";
+    private File usersDir;
     private File []usuarios;
     
     public ManejoUser(){
-        File usersDir = new File(DIRECTORIO_USUARIOS);
+        usersDir = new File(DIRECTORIO_USUARIOS);
         if(!usersDir.exists()){
             usersDir.mkdir();
         }
@@ -50,6 +51,7 @@ public class ManejoUser {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userF))) {
             Datos user = (Datos) ois.readObject();
             System.out.println("Usuario cargado con éxito: " + user.getNombreCompleto());
+            ois.close();
             return user;
         } catch (IOException e) {
             System.err.println("Error de E/S al cargar el usuario '" + nombreC + "': " + e.getMessage());
@@ -61,7 +63,7 @@ public class ManejoUser {
         return null;
     }
     
-    public boolean guardarUsuario(String nombreUser, String nombreC, String contraseña, String avatar){
+    public boolean guardarUsuario(String nombreUser, String nombreC, String contraseña){
         
         File dir = new File(DIRECTORIO_USUARIOS+File.separator+nombreC+ File.separator);
         
@@ -73,10 +75,10 @@ public class ManejoUser {
         
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userF))){
             usuarios= dir.listFiles();
-            System.out.println("Que aparece dentro de el guardado de usuario el avatar: "+avatar);
             
-            Datos user = new Datos(nombreUser, nombreC, contraseña, guardarImagen(avatar, nombreC));
+            Datos user = new Datos(nombreUser, nombreC, contraseña);
             oos.writeObject(user);
+            oos.close();
             return true;
         }catch(IOException e){
             e.printStackTrace();
@@ -84,11 +86,11 @@ public class ManejoUser {
         }
     }
     
-    public boolean agregarUsuario(String nombreUser, String nombreC, String contraseña, String avatar){
+    public boolean agregarUsuario(String nombreUser, String nombreC, String contraseña){
         Datos user = cargaUsuario(nombreC);
         
         if(user==null){
-            return guardarUsuario(nombreUser, nombreC, contraseña, avatar);
+            return guardarUsuario(nombreUser, nombreC, contraseña);
         }
         return false;
     }
@@ -169,13 +171,13 @@ public class ManejoUser {
         }
     }
     
-    public boolean cambiarContra(File user, String contra, String apodo){
+    public boolean cambiarContra(File user, String contra){
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(user));
             Datos userO = (Datos) ois.readObject();
             ois.close();
             
-            if(!userO.getContraseña().equals(contra) && userO.getNombreUser().equals(apodo)){
+            if(!userO.getContraseña().equals(contra)){
                 userO.setContraseña(contra);
                 
                 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(user));
@@ -193,13 +195,13 @@ public class ManejoUser {
         return false;
     }
     
-    public boolean cambiarNombre(File user, String contra, String apodo){
+    public boolean cambiarNombre(File user, String apodo){
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(user));
             Datos userO = (Datos) ois.readObject();
             ois.close();
             
-            if(userO.getContraseña().equals(contra) && !userO.getNombreUser().equals(apodo)){
+            if(!userO.getNombreUser().equals(apodo)){
                 userO.setNombreUser(apodo);
                 
                 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(user));
@@ -219,16 +221,41 @@ public class ManejoUser {
     
     public String guardarImagen(String rutaOrigen, String nombreCompleto) {
         try {
-            String perfil =(rutaOrigen.endsWith(".png")?"Perfil.png":"Perfil.jpg");
+            String directorioUsuario = DIRECTORIO_USUARIOS + File.separator + nombreCompleto;
+            File perfilPng = new File(directorioUsuario, "Perfil.png");
+            File perfilJpg = new File(directorioUsuario, "Perfil.jpg");
+
+            if (perfilPng.exists()) perfilPng.delete();
+            if (perfilJpg.exists()) perfilJpg.delete();
+
+            String extension = rutaOrigen.toLowerCase().endsWith(".png") ? "png" : "jpg";
+            String nuevoPerfil = "Perfil." + extension;
+            
+            // Copiar la nueva imagen
             Files.copy(
                 Path.of(rutaOrigen), 
-                Path.of(DIRECTORIO_USUARIOS+File.separator+nombreCompleto+File.separator+perfil), 
+                Path.of(directorioUsuario, nuevoPerfil), 
                 StandardCopyOption.REPLACE_EXISTING
             );
-            return perfil=DIRECTORIO_USUARIOS+File.separator+nombreCompleto+File.separator+perfil;
+            File user= new File(directorioUsuario+File.separator+ARCHIVO_DATO_USUARIO);
+            
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(user));
+            Datos userO = (Datos) ois.readObject();
+            ois.close();
+            userO.setAvatar(directorioUsuario + File.separator + nuevoPerfil);
+            System.out.println("Avatar seteado como: "+directorioUsuario + File.separator + nuevoPerfil);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(user));
+            oos.writeObject(userO);
+            oos.close();
+
+            usuarios= (new File(DIRECTORIO_USUARIOS)).listFiles();
+            return directorioUsuario + File.separator + nuevoPerfil;
         } catch (IOException e) {
             e.printStackTrace();
             return "";
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ManejoUser.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 }

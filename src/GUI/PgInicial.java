@@ -3,24 +3,12 @@ package GUI;
 
 import Users.Datos;
 import Users.ManejoAvatar;
+import Users.ManejoPreferencia;
 import Users.ManejoUser;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -51,6 +39,7 @@ public class PgInicial extends Grafico{
     
     ManejoUser mUser;
     ManejoAvatar mAvatar;
+    ManejoPreferencia mPreferencia;
     Musica music;
     
     private File archM = new File("src/Musica/happy 8bit.wav");
@@ -59,9 +48,10 @@ public class PgInicial extends Grafico{
     ResourceBundle bundle;
     
     public PgInicial(){
-        
+        mPreferencia = new ManejoPreferencia();
         mAvatar= new ManejoAvatar();
         mUser = new ManejoUser();
+        
         music = new Musica();
         
         music.setMusic(archM);

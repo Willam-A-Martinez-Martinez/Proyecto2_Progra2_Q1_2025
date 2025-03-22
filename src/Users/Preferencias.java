@@ -6,15 +6,15 @@ public class Preferencias implements Serializable{
     private static final long serialVersionUID = 1L;
     
     private String idioma;
-    private int volumen;
+    private float volumen;
     private String teclaArriba;
     private String teclaAbajo;
     private String teclaDerecha;
     private String teclaIzquierda;
 
-    public Preferencias() {
-        this.idioma         = "español";
-        this.volumen        = 50;
+    public Preferencias(String idioma, float volumen) {
+        this.idioma         = idioma;
+        this.volumen        = volumen;
         this.teclaArriba    = "w";
         this.teclaAbajo     = "s";
         this.teclaDerecha   = "d";
@@ -29,11 +29,11 @@ public class Preferencias implements Serializable{
         this.idioma = idioma;
     }
 
-    public int getVolumen() {
+    public float getVolumen() {
         return volumen;
     }
 
-    public void setVolumen(int volumen) {
+    public void setVolumen(float volumen) {
         if(volumen<100 && volumen>=0){
             this.volumen = volumen;
         }else{

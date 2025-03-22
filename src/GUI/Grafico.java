@@ -88,6 +88,7 @@ public class Grafico {
         a.setBounds(x, y, width, heigth);
         a.setText("");
         a.setFont(pixelMplus);
+        a.setEchoChar('*');
     }
     
     public void boton(JButton a,int x, int y, int width, int heigth, boolean setBorderPainted, boolean setContentAreaFilled, String font, int size, String texto, int opaque){

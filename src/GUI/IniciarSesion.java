@@ -6,6 +6,8 @@ package GUI;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -90,6 +92,10 @@ public class IniciarSesion extends Grafico{
             String contra = new String(contraseñaTxtF.getPassword()).trim();
             
             if(pgInicial.mUser.existeUsuario(nombreC, contra)!=null){
+                pgInicial.locale = new Locale(pgInicial.mPreferencia.cargarPreferenciasUser(nombreC).getIdioma());
+                pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
+                pgInicial.music.volumen1=pgInicial.mPreferencia.cargarPreferenciasUser(nombreC).getVolumen();
+                
                 JOptionPane.showMessageDialog(null, (pgInicial.locale.toString().equals("es"))?"Se ha iniciado sesión!":"Successfully logged in!");
                 pgInicial.logUser = pgInicial.mUser.existeUsuario(nombreC, contra);
                 

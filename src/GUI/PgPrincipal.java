@@ -1,6 +1,10 @@
 package GUI;
 
+import static GUI.Registrarse.scaleImage;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
@@ -8,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSlider;
@@ -21,6 +26,7 @@ import prueba_sprite.menu;
 
 public class PgPrincipal extends Grafico{
     JFrame frame= new JFrame();
+    JLabel lblPerfil       = new JLabel();
     private JLabel fondo = new JLabel();
     private JLabel titulo= new JLabel();
     private JButton btnIniciarPartida= new JButton();
@@ -29,12 +35,37 @@ public class PgPrincipal extends Grafico{
     private JButton btnRanking= new JButton();
     private JButton btnPreferencias= new JButton();
     private JButton btnSalir= new JButton();
+    
+    //variables de preferencia
+    JButton botonPP;
+    JButton botonP;
+    JButton botonNickname;
+    JLabel labelP;
+    JLabel labelPP;
+    JLabel labelNickname;
 
     ImageIcon backgroundI= new ImageIcon("src/Assets/FondoRegistro-Inicio Sesion.gif");
     
+    String rutaAvatar;
+    private ImageIcon fotoPerfilImg;
+    
     public PgInicial pgInicial;
     
+    private int contadorCambiarP=0;
+    
     public PgPrincipal(PgInicial pgInicial) {
+        if(pgInicial.mPreferencia.cargarPreferenciasUser(pgInicial.logUser.getNombreCompleto()).getVolumen()==-40.0f){
+            pgInicial.music.volumeMute();
+        }else{
+            pgInicial.music.fc.setValue(pgInicial.mPreferencia.cargarPreferenciasUser(pgInicial.logUser.getNombreCompleto()).getVolumen());
+        }
+        System.out.println(pgInicial.locale.toString());
+        pgInicial.locale=new Locale(pgInicial.mPreferencia.cargarPreferenciasUser(pgInicial.logUser.getNombreCompleto()).getIdioma());
+        pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
+        
+        rutaAvatar = pgInicial.logUser.getAvatar();
+        fotoPerfilImg = new ImageIcon(rutaAvatar);
+        
         metrics = frame.getFontMetrics(pixelMplus);
         this.pgInicial= pgInicial;
         confFrame(frame, "Sokoban", 1000, 700, "Pantalla");
@@ -70,6 +101,9 @@ public class PgPrincipal extends Grafico{
         frame.add(btnSalir,6);
         frame.add(fondo,7);
         
+        frame.invalidate();
+        frame.validate();
+        frame.repaint();
         
         frame.setVisible(true);
         btnPerfilUsuario.addActionListener((ActionEvent e) -> {
@@ -162,6 +196,7 @@ public class PgPrincipal extends Grafico{
                 frame.repaint();
                 frame.validate();
             }
+            pgInicial.music.setVolumen1(-8);
             pgInicial.logUser = null;
             pgInicial.frame.setVisible(true);
             frame.dispose();
@@ -172,7 +207,7 @@ public class PgPrincipal extends Grafico{
 
     private void perfilUsuario() {
         JLabel tituloPerfil = new JLabel();
-        JLabel lblPerfil       = new JLabel();
+        lblPerfil       = new JLabel();
         JLabel lblNombre       = new JLabel();
         JLabel lblApodo        = new JLabel();
         JLabel lblFechaIngreso = new JLabel();
@@ -246,24 +281,19 @@ public class PgPrincipal extends Grafico{
         
         //juego
         JPanel    juego         = new JPanel();
-        JCheckBox muteCB        = new JCheckBox();
         JCheckBox españolCB     = new JCheckBox();
         JCheckBox inglesCB      = new JCheckBox();
         JLabel    volumenTitulo = new JLabel();
         JLabel    idiomaTitulo  = new JLabel();
-        JLabel    muteL         = new JLabel();
         JSlider   volumenM      = new JSlider(-40,6);
         
         if(pgInicial.music.mute==true){
-            muteCB.setSelected(true);
+            volumenM.setValue(-40);
         }
         
         titulo(volumenTitulo, 20, 20 , (metrics.stringWidth(pgInicial.bundle.getString("volumen")))+2, 50, "Dialog", 28, 250, pgInicial.bundle.getString("volumen"));
         titulo(idiomaTitulo, 20, 80 , (metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+2, 50, "Dialog", 28, 250, pgInicial.bundle.getString("idiomaPgInicial"));
-        titulo(muteL, (18*8)+200, 20 , (metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+2, 50, "Dialog", 28, 250, pgInicial.bundle.getString("silenciar"));
         System.out.println((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+2);
-        muteCB.setBounds((18*8)+(18*10)+200, 20, 50, 50);
-        muteCB.setContentAreaFilled(false);
         
         españolCB.setBounds(130+((metrics.stringWidth(pgInicial.bundle.getString("volumen")))-(5*18)), 80, 50, 50);
         inglesCB.setBounds((metrics.stringWidth(pgInicial.bundle.getString("volumen")))+110, 80, 50, 50);
@@ -276,10 +306,8 @@ public class PgPrincipal extends Grafico{
         volumenM.setLayout(null);
         volumenM.setOpaque(false);
         
-        juego.add(muteL);
         juego.add(españolCB);
         juego.add(inglesCB);
-        juego.add(muteCB);
         juego.add(volumenTitulo);
         juego.add(idiomaTitulo);
         juego.setOpaque(false);
@@ -306,7 +334,6 @@ public class PgPrincipal extends Grafico{
             pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
             pgInicial.actualizarIdioma(new Locale("en"));
 
-            muteL.setText(pgInicial.bundle.getString("silenciar"));
             volumenTitulo.setText(pgInicial.bundle.getString("volumen"));
             idiomaTitulo.setText(pgInicial.bundle.getString("idiomaPgInicial"));
 
@@ -337,7 +364,6 @@ public class PgPrincipal extends Grafico{
             idiomaTitulo.setBounds(20, 80 , (metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+2, 50);
             españolCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+10-(3*18), 80);
             inglesCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+28, 80);
-            muteCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+metrics.stringWidth(pgInicial.bundle.getString("volumen"))+215, 20);
             juego.repaint();
             juego.validate();
         }else if(pgInicial.locale.toString().equals("es")){
@@ -345,10 +371,11 @@ public class PgPrincipal extends Grafico{
             españolCB.setSelected(true);
             pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
             pgInicial.actualizarIdioma(new Locale("es"));
+            
+            
 
             volumenTitulo.setText(pgInicial.bundle.getString("volumen"));
             idiomaTitulo.setText(pgInicial.bundle.getString("idiomaPgInicial"));
-            muteL.setText(pgInicial.bundle.getString("silenciar"));
 
             configuracionTabs.setTitleAt(0, pgInicial.bundle.getString("juego"));
             configuracionTabs.setTitleAt(1, pgInicial.bundle.getString("perfil"));
@@ -369,23 +396,28 @@ public class PgPrincipal extends Grafico{
             idiomaTitulo.setBounds(20, 80 , (metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+2, 50);
             españolCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+10-(3*18), 80);
             inglesCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+28, 80);
-            muteCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+metrics.stringWidth(pgInicial.bundle.getString("volumen"))+200, 20);
             juego.repaint();
             juego.validate();
         }
         
         volumenM.setValue(Math.round(pgInicial.music.volumen1));
+        
         volumenM.addChangeListener((ChangeEvent e) -> {
-            if(pgInicial.music.mute==false){
-                pgInicial.music.volumen1 = volumenM.getValue();
+                
+            pgInicial.music.volumen1 = volumenM.getValue();
+            pgInicial.mPreferencia.actualizarVolumen(pgInicial.logUser.getNombreCompleto(), pgInicial.music.volumen1);
+            if(pgInicial.music.mute==false && pgInicial.music.volumen1==-40){
+                System.out.println("Esta en -40");
+                pgInicial.music.volumeMute();
+            }else if(pgInicial.music.volumen1!=-40){
+                if (pgInicial.music.mute) {  // Si estaba muteado, desmutea
+                    pgInicial.music.volumeMute();
+                }
                 pgInicial.music.fc.setValue(pgInicial.music.volumen1);
-                System.out.println("Valor de slider: "+volumenM.getValue());
             }
+            System.out.println("Valor de slider: "+volumenM.getValue());
         });
         
-        muteCB.addActionListener((ActionEvent e) -> {
-            pgInicial.music.volumeMute();
-        });
         
         
         
@@ -395,10 +427,11 @@ public class PgPrincipal extends Grafico{
                 pgInicial.locale = new Locale("es");
                 pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
                 pgInicial.actualizarIdioma(new Locale("es"));
+                
+                pgInicial.mPreferencia.actualizarIdioma(pgInicial.logUser.getNombreCompleto(), pgInicial.locale.toString());
 
                 volumenTitulo.setText(pgInicial.bundle.getString("volumen"));
                 idiomaTitulo.setText(pgInicial.bundle.getString("idiomaPgInicial"));
-                muteL.setText(pgInicial.bundle.getString("silenciar"));
 
                 configuracionTabs.setTitleAt(0, pgInicial.bundle.getString("juego"));
                 configuracionTabs.setTitleAt(1, pgInicial.bundle.getString("perfil"));
@@ -412,16 +445,21 @@ public class PgPrincipal extends Grafico{
                 btnPreferencias.setText(pgInicial.bundle.getString("configuracion"));
                 btnSalir.setText(pgInicial.bundle.getString("salirSesion"));
                 
+                labelNickname.setText(pgInicial.bundle.getString("cambioApodo"));
+                labelP.setText(pgInicial.bundle.getString("cambioContraseña"));
+                labelPP.setText(pgInicial.bundle.getString("cambioPerfil"));
+                botonNickname.setText(pgInicial.bundle.getString("cambiarApodo"));
+                botonP.setText(pgInicial.bundle.getString("ingreseContra"));
+                botonPP.setText(pgInicial.bundle.getString("cambiarFP"));
+                salir.setText(pgInicial.bundle.getString("volver"));
                 
                 españolCB.setEnabled(false);
                 inglesCB.setEnabled(true);
                 
                 idiomaTitulo.setBounds(20, 80 , (metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+5, 50);
-                muteL.setBounds((18*8)+200, 20 , (metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+5, 50);
                 volumenTitulo.setBounds(20, 20 , (metrics.stringWidth(pgInicial.bundle.getString("volumen")))+2, 50);
                 españolCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+10-(3*18), 80);
                 inglesCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+28, 80);
-                muteCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+metrics.stringWidth(pgInicial.bundle.getString("volumen"))+200, 20);
                 juego.repaint();
                 juego.validate();
             }
@@ -433,8 +471,9 @@ public class PgPrincipal extends Grafico{
                 pgInicial.locale = new Locale("en");
                 pgInicial.bundle = ResourceBundle.getBundle("resources.mensajes", pgInicial.locale);
                 pgInicial.actualizarIdioma(new Locale("en"));
+                
+                pgInicial.mPreferencia.actualizarIdioma(pgInicial.logUser.getNombreCompleto(), pgInicial.locale.toString());
 
-                muteL.setText(pgInicial.bundle.getString("silenciar"));
                 volumenTitulo.setText(pgInicial.bundle.getString("volumen"));
                 idiomaTitulo.setText(pgInicial.bundle.getString("idiomaPgInicial"));
 
@@ -449,6 +488,14 @@ public class PgPrincipal extends Grafico{
                 btnRanking.setText(pgInicial.bundle.getString("ranking"));
                 btnPreferencias.setText(pgInicial.bundle.getString("configuracion"));
                 btnSalir.setText(pgInicial.bundle.getString("salirSesion"));
+                
+                labelNickname.setText(pgInicial.bundle.getString("cambioApodo"));
+                labelP.setText(pgInicial.bundle.getString("cambioContraseña"));
+                labelPP.setText(pgInicial.bundle.getString("cambioPerfil"));
+                botonNickname.setText(pgInicial.bundle.getString("cambiarApodo"));
+                botonP.setText(pgInicial.bundle.getString("ingreseContra"));
+                botonPP.setText(pgInicial.bundle.getString("cambiarFP"));
+                salir.setText(pgInicial.bundle.getString("volver"));
                 
                 inglesCB.setEnabled(false);
                 españolCB.setEnabled(true);
@@ -463,7 +510,6 @@ public class PgPrincipal extends Grafico{
                 idiomaTitulo.setBounds(20, 80 , (metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+2, 50);
                 españolCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+10-(3*18), 80);
                 inglesCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")))+28, 80);
-                muteCB.setLocation((metrics.stringWidth(pgInicial.bundle.getString("silenciar")))+metrics.stringWidth(pgInicial.bundle.getString("volumen"))+215, 20);
                 juego.repaint();
                 juego.validate();
             }
@@ -545,28 +591,41 @@ public class PgPrincipal extends Grafico{
     
     public void contPanelConfPerfil(JFrame frame, JTabbedPane tabbedPane, JPanel perfil, JButton salir){
         
-        
+        System.out.println("Initial rutaAvatar: " + rutaAvatar);
         perfil.setOpaque(false);
         perfil.setLayout(null);
         
-        JButton botonPP = new JButton();
-        JButton botonP = new JButton();
-        JButton botonNickname = new JButton();
-        JLabel labelP = new JLabel();
-        JLabel labelPP = new JLabel();
-        JLabel labelNickname = new JLabel();
+         botonPP          = new JButton();
+         botonP           = new JButton();
+         botonNickname    = new JButton();
+         labelP            = new JLabel();
+         labelPP           = new JLabel();
+         labelNickname     = new JLabel();
+        JLabel imgPerfil         = new JLabel();
         JTextField fieldNickname = new JTextField();
-        JPasswordField fieldP = new JPasswordField();
-        //dimencion de panel 650 400
-        boton(botonPP, 245, 110, (metrics.stringWidth(pgInicial.bundle.getString("cambiarFP")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("cambiarFP"),250);
-        boton(botonP, 50, 110, (metrics.stringWidth(pgInicial.bundle.getString("jugar")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("ingreseContra"),250);
-        boton(botonNickname, 50, 110, (metrics.stringWidth(pgInicial.bundle.getString("jugar")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("cambiarApodo"),250);
-        titulo(labelP, 60, 50 , (metrics.stringWidth((pgInicial.bundle.getString("menuPrincipal")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioContraseña"));
-        titulo(labelPP, 60, 50 , (metrics.stringWidth((pgInicial.bundle.getString("menuPrincipal")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioPerfil"));
-        titulo(labelNickname, 60, 50 , (metrics.stringWidth((pgInicial.bundle.getString("menuPrincipal")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioApodo"));
-        textfield(fieldNickname, 100, 175, 170, 30, "Dialog", 20);
-        passwordfield(fieldP, 100, 275, 170, 30, "Dialog", 20);
+        JPasswordField fieldP    = new JPasswordField();
         
+        fotoPerfilImg = new ImageIcon(rutaAvatar);
+        System.out.println("Ruta del avatar: " + rutaAvatar);
+        fotoPerfilImg = scaleImage(fotoPerfilImg, 100, 100);
+        
+        //dimencion de panel 650 400
+        //nickname
+        titulo(labelNickname, 20, 20, (metrics.stringWidth((pgInicial.bundle.getString("cambioApodo")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioApodo"));
+        textfield(fieldNickname, 20, 80, 250, 30, "Dialog", 20);
+        boton(botonNickname, 5, 110, (metrics.stringWidth(pgInicial.bundle.getString("cambiarApodo")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("cambiarApodo"), 250);
+        //password
+        titulo(labelP, 20, 200, (metrics.stringWidth((pgInicial.bundle.getString("cambioContraseña")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioContraseña"));
+        passwordfield(fieldP, 20, 260, 250, 30, "Dialog", 20);
+        boton(botonP, 5, 282, (metrics.stringWidth(pgInicial.bundle.getString("ingreseContra")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("ingreseContra"), 250);
+        //Profile picture
+        titulo(labelPP, 300, 50, (metrics.stringWidth((pgInicial.bundle.getString("cambioPerfil")))), 50, "Dialog", 28, 250, pgInicial.bundle.getString("cambioPerfil"));
+        fondo(imgPerfil, 0, 0, fotoPerfilImg, frame);
+        imgPerfil.setSize(100, 100);
+        imgPerfil.setLocation(400, 120);
+        boton(botonPP, 280, 230, (metrics.stringWidth(pgInicial.bundle.getString("cambiarFP")))+40, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("cambiarFP"), 250);
+        
+        perfil.add(imgPerfil);
         perfil.add(botonPP);
         perfil.add(botonP);
         perfil.add(botonNickname);
@@ -576,6 +635,90 @@ public class PgPrincipal extends Grafico{
         perfil.add(fieldNickname);
         perfil.add(fieldP);
 
+        botonPP.addActionListener((ActionEvent e) -> {
+            
+            System.out.println("After selection: " + rutaAvatar);
+            System.out.println("After guardarImagen: " + rutaAvatar);
+            
+            rutaAvatar = pgInicial.mAvatar.seleccionarImagen(pgInicial.logUser.getAvatar());
+            System.out.println(pgInicial.logUser.getAvatar());
+            if(!rutaAvatar.equals(pgInicial.logUser.getAvatar())){
+                rutaAvatar=pgInicial.mUser.guardarImagen(rutaAvatar, pgInicial.logUser.getNombreCompleto());
+            }
+            fotoPerfilImg= new ImageIcon(rutaAvatar);
+            fotoPerfilImg = scaleImage(fotoPerfilImg, 100, 100);
+            imgPerfil.setIcon(fotoPerfilImg);
+            lblPerfil.setIcon(fotoPerfilImg);
+            pgInicial.logUser.setAvatar(rutaAvatar);
+        });
+        botonP.addActionListener((ActionEvent e) -> {
+            String password = new String(fieldP.getPassword()).trim();
+            if(contadorCambiarP==0){
+                if(password.equals(pgInicial.logUser.getContraseña())){
+                    JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                    "Ingreso la contraseña correctamente!\nAhora ingrese la nueva contraseña." : 
+                    "Password entered correctly!\nNow enter the new password.");
+                    salir.setEnabled(false);
+                    botonNickname.setEnabled(false);
+                    botonPP.setEnabled(false);
+                    tabbedPane.setEnabled(false);
+                    contadorCambiarP++;
+                    fieldP.setText("");
+                }else{
+                    JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                    "Ingrese la contraseña correcta!" : 
+                    "Enter the correct password!");
+                    fieldP.setText("");
+                }
+            }
+            else if(contadorCambiarP==1){
+                if(!password.equals(pgInicial.logUser.getContraseña()) && !password.equals("")){
+                    if(pgInicial.mUser.cambiarContra(new File(("Usuarios/"+pgInicial.logUser.getNombreCompleto()+"/datos.dat")), password)){   
+                        pgInicial.logUser.setContraseña(password);
+                        salir.setEnabled(true);
+                        botonNickname.setEnabled(true);
+                        botonPP.setEnabled(true);
+                        tabbedPane.setEnabled(true);
+                        contadorCambiarP--;
+                        fieldP.setText("");
+                    }
+                }
+                else if(password.equals(pgInicial.logUser.getContraseña())){
+                    JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                    "Ingreso la misma contraseña! ingrese una nueva contraseña." : 
+                    "You entered the same password! Enter a new password.");
+                    fieldP.setText("");
+                }else if(password.equals("")){
+                    JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                    "Ingrese una contraseña valida!" : 
+                    "Enter a valid password!");
+                    fieldP.setText("");
+                }
+            }
+        });
+        botonNickname.addActionListener((ActionEvent e) -> {
+            String nombreN = fieldNickname.getText();
+            if(!nombreN.equals(pgInicial.logUser.getNombreUser()) && !nombreN.equals("")){
+                pgInicial.logUser.setNombreUser(nombreN);
+                if(pgInicial.mUser.cambiarNombre(new File(("Usuarios/"+pgInicial.logUser.getNombreCompleto()+"/datos.dat")),nombreN)){
+                    JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                    "Cambio de apodo exitoso!" : 
+                    "Nickname change successful!");
+                    fieldNickname.setText("");
+                }
+                
+            }else if(nombreN.equals("")){
+                JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                "Ingrese un nombre valido." : 
+                "Enter a valid name.");
+            }else if(nombreN.equals(pgInicial.logUser.getNombreUser())){
+                JOptionPane.showMessageDialog(null, pgInicial.locale.toString().equals("es") ? 
+                "Ingrese un nombre diferente." : 
+                "Enter a different name.");
+                fieldNickname.setText("");
+            }
+        });
+        
         boton(salir, 140, 180, 120, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("volver"), 250);
         frame.add(tabbedPane);
         frame.add(salir);
