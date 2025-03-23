@@ -35,7 +35,7 @@ public class gamepanel extends JPanel implements Runnable {
     public final int worldHeight = tamanopersonaje * maxWorldRow;
     int FPS = 60;
 
-    MovimientoTeclado movimiento = new MovimientoTeclado();
+    MovimientoTeclado movimiento;
 
     Thread juegoTH;
     PgInicial pgInicial;
@@ -43,18 +43,27 @@ public class gamepanel extends JPanel implements Runnable {
     fileManager tileM;
     public CollisionCheker colision;
 
-    public gamepanel(int nivel,PgInicial pgInicial) {
-        esdras = new jugador(this, movimiento, pgInicial);
-        tileM  = new fileManager(this);
+    public gamepanel(int nivel, PgInicial pgInicial) {
+        this.pgInicial = pgInicial;
         this.nivel = nivel;
-        System.out.println("El nivel en gamepanel es: " + this.nivel);
         this.setPreferredSize(new Dimension(pantallaancho, pantallalargo));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
+
+        // Inicializar primero movimiento
+        movimiento = new MovimientoTeclado();
         this.addKeyListener(movimiento);
         this.setFocusable(true);
+
+        // Ahora se puede crear el jugador con un objeto MovimientoTeclado válido
+        esdras = new jugador(this, movimiento, pgInicial);
+
+        tileM = new fileManager(this, pgInicial);
         colision = new CollisionCheker(this);
+
+        System.out.println("El nivel en gamepanel es: " + this.nivel);
     }
+
 
     public int getnivel() {
         return nivel;

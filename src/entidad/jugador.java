@@ -130,7 +130,7 @@ public class jugador extends entidades {
             }
             collisionON = false;
             if (gp.colision != null) {
-                gp.colision.checktile(this);
+                gp.colision.checktile(this, pgInicial);
             }
 
             //if collision is false, player can move 

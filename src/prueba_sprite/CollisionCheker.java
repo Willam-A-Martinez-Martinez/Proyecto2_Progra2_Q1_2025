@@ -4,6 +4,7 @@
  */
 package prueba_sprite;
 
+import GUI.PgInicial;
 import entidad.entidades;
 
 /**
@@ -19,7 +20,7 @@ public class CollisionCheker {
         this.gp = gp;
     }
 
-    public void checktile(entidades entity) {
+    public void checktile(entidades entity,PgInicial pgInicial) {
         int entityLeftWorldX = entity.worldx + entity.solidArea.x;
         int entityRightWorldX = entity.worldx + entity.solidArea.x + entity.solidArea.width;
         int entityTopWorldY = entity.worldy + entity.solidArea.y;
@@ -135,7 +136,7 @@ public class CollisionCheker {
             }
 
           
-            gp.tileM.moverCaja(nuevaCol, nuevaRow, cajaCol, cajaRow);
+            gp.tileM.moverCaja(nuevaCol, nuevaRow, cajaCol, cajaRow, pgInicial);
         }
 
     }

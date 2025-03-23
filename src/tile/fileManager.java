@@ -4,6 +4,8 @@
  */
 package tile;
 
+import GUI.PgInicial;
+import Users.Estadisticas;
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import javax.swing.JOptionPane;
 import prueba_sprite.MovimientoTeclado;
 import prueba_sprite.gamepanel;
 import prueba_sprite.menu;
-import prueba_sprite.nivelxd;
 
 /**
  *
@@ -23,17 +24,20 @@ import prueba_sprite.nivelxd;
  */
 public class fileManager {
 
+     private static fileManager instancia;
     gamepanel gp;
     public tiles[] tile;
-    public int maptilenum[][];
+    public int maptilenum[][]; 
     public String[][] mapTileString;
     public ArrayList<int[]> puntosPosiciones;
-    MovimientoTeclado xd = new MovimientoTeclado();
-    
+    MovimientoTeclado movimientos;
 
+    PgInicial pgInicial;
+    
     String mapa = "";
 
-    public fileManager(gamepanel gp) {
+    public fileManager(gamepanel gp, PgInicial pgInicial) {
+        movimientos = MovimientoTeclado.obtenerInstancia(pgInicial);
         this.gp = gp;
         tile = new tiles[10];
 
@@ -113,7 +117,7 @@ public class fileManager {
         }
     }
 
-    public void moverCaja(int nuevaCol, int nuevaRow, int cajaCol, int cajaRow) {
+    public void moverCaja(int nuevaCol, int nuevaRow, int cajaCol, int cajaRow, PgInicial pgInicial) {
         if (nuevaCol < 0 || nuevaCol >= gp.maxWorldCol || nuevaRow < 0 || nuevaRow >= gp.maxWorldRow) {
             return;
         }
@@ -146,33 +150,46 @@ public class fileManager {
         }
 
         loadmap();
-        verificarGanar();
+        verificarGanar(pgInicial);
     }
 
-    public void verificarGanar() {
-        boolean ganado = true;
+public void verificarGanar(PgInicial pgInicial) { 
+    boolean ganado = true;
 
-        for (int[] coordenadas : puntosPosiciones) {
-            int col = coordenadas[0];
-            int row = coordenadas[1];
+    for (int[] coordenadas : puntosPosiciones) {
+        int col = coordenadas[0];
+        int row = coordenadas[1];
 
-            if (maptilenum[col][row] != 3) {
-                ganado = false;
-                break;
-            }
-        }
-
-        if (ganado) {
-            JOptionPane.showMessageDialog(null, "¡Ganaste!", "Victoria", JOptionPane.INFORMATION_MESSAGE);
-
-            menu menuPrincipal = menu.getInstance();
-            menuPrincipal.cerrar_juego();
-            menuPrincipal.siguiente_nivel();
-            menuPrincipal.actualizarNiveles();
-            menuPrincipal.setVisible(true);
-            System.out.println(xd.getMovimiento());
+        if (maptilenum[col][row] != 3) {
+            ganado = false;
+            break;
         }
     }
+
+    if (ganado) {
+        JOptionPane.showMessageDialog(null, "¡Ganaste!", "Victoria", JOptionPane.INFORMATION_MESSAGE);
+
+        if (movimientos.getUsuario() == null) { 
+            System.out.println("ERROR: El usuario no está definido en MovimientoTeclado antes de guardar.");
+        } else {
+            movimientos.guardarMovimientos();
+            System.out.println("Movimientos después de guardar: " + movimientos.getMovimiento()); // Esto debería ser 0
+        }
+        pgInicial.estadisticas.endGame();
+        pgInicial.estadisticas.completeLevel();
+        pgInicial.mEstadisticas.guardarEstadisticas(pgInicial.logUser.getNombreCompleto(), pgInicial.estadisticas);
+        menu menuPrincipal = menu.getInstance();
+
+        pgInicial.mEstadisticas.mostrarEstadisticas(pgInicial.logUser.getNombreCompleto());
+        // Asegúrate de que cerrar_juego() no borra datos antes de guardar
+        
+        menuPrincipal.cerrar_juego();
+        menuPrincipal.siguiente_nivel(pgInicial);
+        menuPrincipal.actualizarNiveles();
+        menuPrincipal.setVisible(true);
+    }
+}
+
 
     public void gettileImage() {
         try {
@@ -222,4 +239,6 @@ public class fileManager {
         }
 
     }
+  
+
 }

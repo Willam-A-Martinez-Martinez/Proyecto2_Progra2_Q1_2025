@@ -1,5 +1,8 @@
 package GUI;
 
+import Users.Estadisticas;
+import Users.ManejoEstadisticas;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -13,9 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -124,6 +129,7 @@ public class PgPrincipal extends Grafico{
             frame.getContentPane().removeAll();
             frame.repaint();
             frame.revalidate();
+            
             estadisticas();
         });
         
@@ -568,38 +574,77 @@ public class PgPrincipal extends Grafico{
 
     private void estadisticas() {
         JButton salir = new JButton();
-        
+        JTextPane estadisticasTexto = new JTextPane();
+        JScrollPane rankingScroll = new JScrollPane(estadisticasTexto);
+
         boton(salir, 140, 180, 120, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("volver"), 250);
-        
-        frame.add(salir, 0);
-        frame.add(fondo, 1);
+
+        rankingScroll.setBounds(343, 25, 625, 200);
+        rankingScroll.setFont(pixelMplus);
+
+        // Make JScrollPane and its viewport transparent
+        rankingScroll.setOpaque(false);
+        rankingScroll.getViewport().setOpaque(false);
+        rankingScroll.setBorder(null);
+
+        // Obtener las estadísticas del usuario actual
+        ManejoEstadisticas manejoEstadisticas = new ManejoEstadisticas("Usuarios");
+        Estadisticas stats = manejoEstadisticas.cargarEstadisticas(pgInicial.logUser.getNombreCompleto());
+
+        // Configurar JTextPane con las estadísticas
+        estadisticasTexto.setText(stats.toString());
+        estadisticasTexto.setFont(pixelMplus);
+        estadisticasTexto.setForeground(new Color(76, 70, 66));
+        estadisticasTexto.setEditable(false);
+
+        // Make JTextPane fully transparent
+        estadisticasTexto.setBackground(new Color(0, 0, 0, 0));
+        estadisticasTexto.setOpaque(false);
+
+        frame.add(rankingScroll, 0);
+        frame.add(salir, 1);
+        frame.add(fondo, 2);
         frame.repaint();
         frame.revalidate();
-        
+
         salir.addActionListener((ActionEvent e) -> {
             frame.getContentPane().removeAll();
-            
-            frame.add(titulo,0);
-            frame.add(btnIniciarPartida,1);
-            frame.add(btnPerfilUsuario,2);
-            frame.add(btnPreferencias,3);
-            frame.add(btnEstadisticas,4);
-            frame.add(btnRanking,5);
-            frame.add(btnSalir,6);
-            frame.add(fondo,7);
-            
+
+            frame.add(titulo, 0);
+            frame.add(btnIniciarPartida, 1);
+            frame.add(btnPerfilUsuario, 2);
+            frame.add(btnPreferencias, 3);
+            frame.add(btnEstadisticas, 4);
+            frame.add(btnRanking, 5);
+            frame.add(btnSalir, 6);
+            frame.add(fondo, 7);
+
             frame.repaint();
             frame.revalidate();
         });
     }
+
     
     private void ranking() {
         JButton salir = new JButton();
+        JTextPane rankingContenedor = new JTextPane();
+        JScrollPane rankingScroll = new JScrollPane(rankingContenedor);
+        rankingContenedor.setText("--------------Ranking--------------");
         
         boton(salir, 140, 180, 120, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("volver"), 250);
         
-        frame.add(salir, 0);
-        frame.add(fondo, 1);
+        rankingScroll.setBounds(343, 25, 625, 400);
+        rankingScroll.setFont(pixelMplus);
+        
+        rankingScroll.setOpaque(false);
+        rankingScroll.getViewport().setOpaque(false);
+        rankingScroll.setBorder(null);
+        rankingContenedor.setOpaque(false);
+        rankingContenedor.setFont(pixelMplus);
+        
+        frame.add(rankingScroll, 0);
+        frame.add(salir, 1);
+        frame.add(fondo, 2);
         frame.repaint();
         frame.revalidate();
         

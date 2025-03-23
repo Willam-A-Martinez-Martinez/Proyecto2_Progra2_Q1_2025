@@ -85,12 +85,16 @@ public class Menu_pausa extends JFrame {
 
         // Acción para "Salir"
         salir.addActionListener(e -> {
+            
     int opcion = JOptionPane.showConfirmDialog(
             null, "¿Deseas volver al menú?", "Volver al menú",
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE
     );
 
     if (opcion == JOptionPane.YES_OPTION) {
+        pgInicial.estadisticas.endGame();
+        pgInicial.mEstadisticas.guardarEstadisticas(pgInicial.logUser.getNombreCompleto(), pgInicial.estadisticas);
+        pgInicial.mEstadisticas.mostrarEstadisticas(pgInicial.logUser.getNombreCompleto());
          // Pasamos el botón como referencia
          menu.getInstance().cerrar_juego();
          this.dispose();

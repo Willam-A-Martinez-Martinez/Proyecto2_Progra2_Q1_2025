@@ -5,6 +5,8 @@
 package GUI;
 
 import Users.Datos;
+import prueba_sprite.MovimientoTeclado;
+import Users.Progreso;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
@@ -14,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import prueba_sprite.menu;
 
 /**
  *
@@ -127,6 +130,15 @@ public class Registrarse extends Grafico{
             String contra = new String(contraseñaTxtF.getPassword()).trim();
 
             if (!nombreUser.equals("") && !nombreC.equals("") && !contra.equals("")) {
+                
+                Progreso progreso = Progreso.obtenerInstancia();
+                MovimientoTeclado movimientos = MovimientoTeclado.obtenerInstancia(this.pgInicial);
+                movimientos.setUsuario(nombreC);
+                movimientos.inicializarMovimientos();
+                progreso.guardarProgreso(nombreC);//  aqui 
+                menu m = menu.getInstance();
+                m.setUser(nombreC);
+                
                 if (pgInicial.mUser.agregarUsuario(nombreUser, nombreC, contra)) {
                     pgInicial.mPreferencia.guardarPreferenciasUser(pgInicial.locale.toString(), pgInicial.music.getVolumen1(), nombreC);
                     // Save the image first

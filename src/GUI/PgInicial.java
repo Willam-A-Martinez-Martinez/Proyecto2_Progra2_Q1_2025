@@ -2,7 +2,9 @@ package GUI;
 
 
 import Users.Datos;
+import Users.Estadisticas;
 import Users.ManejoAvatar;
+import Users.ManejoEstadisticas;
 import Users.ManejoPreferencia;
 import Users.ManejoUser;
 import Users.Progreso;
@@ -16,6 +18,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import prueba_sprite.MovimientoTeclado;
 import prueba_sprite.menu;
 
 public class PgInicial extends Grafico{
@@ -42,6 +45,9 @@ public class PgInicial extends Grafico{
     public ManejoUser mUser;
     public ManejoAvatar mAvatar;
     public ManejoPreferencia mPreferencia;
+    public ManejoEstadisticas mEstadisticas;
+    public Estadisticas estadisticas;
+    
     Progreso progreso;
     
     public Musica music;
@@ -55,7 +61,10 @@ public class PgInicial extends Grafico{
         mPreferencia = new ManejoPreferencia();
         mAvatar= new ManejoAvatar();
         mUser = new ManejoUser();
+        mEstadisticas = new ManejoEstadisticas("Usuarios");
+        estadisticas = new Estadisticas();
         
+        MovimientoTeclado.inicializarPgInicial(this);
         menu.initializeWithPgInicial(this);
         
         music = new Musica();

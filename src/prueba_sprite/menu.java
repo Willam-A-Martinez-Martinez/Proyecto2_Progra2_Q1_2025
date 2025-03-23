@@ -6,6 +6,7 @@ package prueba_sprite;
 
 import GUI.PgInicial;
 import GUI.PgPrincipal;
+import Users.Estadisticas;
 import Users.Progreso;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,7 +19,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -176,9 +176,12 @@ public class menu extends JFrame {
         });
     }
 
-    public void siguiente_nivel() {
+    public void siguiente_nivel(PgInicial pgInicial) {
         if (nivel_actual < 5) {
             nivel_actual++;
+             Progreso.obtenerInstancia().guardarNivel(usuario, nivel_actual); 
+             MovimientoTeclado.obtenerInstancia(pgInicial).guardarMovimientos();
+             actualizarNiveles();
         }
     }
 
@@ -214,6 +217,7 @@ public class menu extends JFrame {
     }
 
     private void seleccionarNivel(int nivelSeleccionado) {
+        staticPgInicial.estadisticas.startGame();
         this.nivel = nivelSeleccionado;
         abrirJuego();
     }

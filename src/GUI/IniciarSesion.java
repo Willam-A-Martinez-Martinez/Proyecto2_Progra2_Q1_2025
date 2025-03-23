@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import prueba_sprite.MovimientoTeclado;
+import prueba_sprite.menu;
 
 /**
  *
@@ -98,6 +100,14 @@ public class IniciarSesion extends Grafico{
                 
                 JOptionPane.showMessageDialog(null, (pgInicial.locale.toString().equals("es"))?"Se ha iniciado sesión!":"Successfully logged in!");
                 pgInicial.logUser = pgInicial.mUser.existeUsuario(nombreC, contra);
+                MovimientoTeclado movimientos = MovimientoTeclado.obtenerInstancia(this.pgInicial);
+                movimientos.setUsuario(nombreC);
+                movimientos.inicializarMovimientos();
+               
+                System.out.println("Nombre antes de setUser: " + nombreC);
+                menu m = menu.getInstance();
+                m.setUser(nombreC);
+                System.out.println("Usuario después de setUser: " + m.getNombre());
                 
                 pgInicial.mUser.actualizarSesion(nombreC);
                 pgInicial.mUser.iniciaSesionUsuario(nombreC);
