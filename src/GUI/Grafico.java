@@ -24,9 +24,9 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
     
 public class Grafico {
     ImageIcon logoVentana = new ImageIcon("src/UI_Images/CajaCafeOscuro.png");
+    private int r=76,g=70,b=66;
     Font pixelMplus;
     FontMetrics metrics;
-    private int r=76,g=70,b=66;
     
     public Grafico(){
         try{

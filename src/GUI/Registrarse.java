@@ -139,7 +139,7 @@ public class Registrarse extends Grafico{
                     if (pgInicial.logUser != null) {
                         System.out.println("Avatar cargado: " + pgInicial.logUser.getAvatar());
                     }
-
+                    pgInicial.mUser.iniciaSesionUsuario(nombreC);
                     PgPrincipal pgP = new PgPrincipal(pgInicial);
                     pgP.frame.setVisible(true);
                     frame.dispose();

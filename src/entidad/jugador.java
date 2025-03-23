@@ -1,6 +1,10 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package entidad;
 
-import java.awt.Color;
+import GUI.PgInicial;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -20,8 +24,11 @@ public class jugador extends entidades {
     MovimientoTeclado mt;
     public final int screenY;
     public final int screenX;
+    
+    PgInicial pgInicial;
 
-    public jugador(gamepanel gp, MovimientoTeclado mt) {
+    public jugador(gamepanel gp, MovimientoTeclado mt, PgInicial pgInicial) {
+        this.pgInicial=pgInicial;
         this.gp = gp;
         this.mt = mt;
         screenX = gp.pantallaancho / 2 - (gp.tamanopersonaje / 2);

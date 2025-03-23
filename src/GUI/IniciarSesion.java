@@ -99,11 +99,8 @@ public class IniciarSesion extends Grafico{
                 JOptionPane.showMessageDialog(null, (pgInicial.locale.toString().equals("es"))?"Se ha iniciado sesión!":"Successfully logged in!");
                 pgInicial.logUser = pgInicial.mUser.existeUsuario(nombreC, contra);
                 
-                File modif = new File("Usuarios/"+nombreC+"/datos.dat");
-                
-                if(modif.exists()){
-                    pgInicial.mUser.actualizaUltimaSesion(modif);
-                }
+                pgInicial.mUser.actualizarSesion(nombreC);
+                pgInicial.mUser.iniciaSesionUsuario(nombreC);
                 
                 PgPrincipal pgP = new PgPrincipal(pgInicial);
                 pgP.frame.setVisible(true);

@@ -1,14 +1,16 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package tile;
 
+import GUI.PgInicial;
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import prueba_sprite.MovimientoTeclado;
 import prueba_sprite.menu;
 
 /**
@@ -16,9 +18,12 @@ import prueba_sprite.menu;
  * @author 50488
  */
 public class Menu_pausa extends JFrame {
-menu menuu = new menu();
+    PgInicial pgInicial;
+    menu menuu;
  private static boolean salirJuego = false; 
-    public Menu_pausa() {
+    public Menu_pausa(PgInicial pgInicial) {
+        this.pgInicial=pgInicial;
+        menuu = new menu(pgInicial);
         setTitle("Menu de Pausa");
         setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // No cierra toda la aplicación

@@ -1,7 +1,5 @@
 package GUI;
 
-import static GUI.Registrarse.scaleImage;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -20,6 +18,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import prueba_sprite.menu;
@@ -54,6 +53,7 @@ public class PgPrincipal extends Grafico{
     private int contadorCambiarP=0;
     
     public PgPrincipal(PgInicial pgInicial) {
+        System.out.println("Nombre completo de usuario: "+pgInicial.logUser.getNombreCompleto());
         if(pgInicial.mPreferencia.cargarPreferenciasUser(pgInicial.logUser.getNombreCompleto()).getVolumen()==-40.0f){
             pgInicial.music.volumeMute();
         }else{
@@ -134,9 +134,10 @@ public class PgPrincipal extends Grafico{
             ranking();
         });
         btnIniciarPartida.addActionListener((ActionEvent e)->{
-          menu fMenu = new menu();
-          fMenu.setVisible(true);
+          SwingUtilities.invokeLater(() -> {
+          menu.getInstance().setVisible(true);
           frame.dispose();
+          });
         });
         
         btnSalir.addActionListener((ActionEvent e) -> {
@@ -196,8 +197,12 @@ public class PgPrincipal extends Grafico{
                 frame.validate();
             }
             pgInicial.music.setVolumen1(-8);
+            pgInicial.music.mute=false;
+            pgInicial.muteCB.setSelected(false);
+            pgInicial.mUser.cierraSesionUsuario(pgInicial.logUser.getNombreCompleto());
             pgInicial.logUser = null;
             pgInicial.frame.setVisible(true);
+            
             frame.dispose();
         });
     }
@@ -211,6 +216,7 @@ public class PgPrincipal extends Grafico{
         JLabel lblApodo        = new JLabel();
         JLabel lblFechaIngreso = new JLabel();
         JLabel lblUltimaSesion = new JLabel();
+        JLabel lblTiempoJugado = new JLabel();
         JButton salir = new JButton();
         
         ImageIcon perfil = new ImageIcon(pgInicial.logUser.getAvatar());
@@ -224,16 +230,18 @@ public class PgPrincipal extends Grafico{
         Ultima sesion: 
         */
         
-        titulo(tituloPerfil   , 400, 50 , 250, 50, "Dialog", 28, 250, pgInicial.bundle.getString("perfilUsuario"));
-        titulo(lblPerfil      , 400, 110 , 100, 100, "Dialog", 28, 250, "");
-        titulo(lblNombre      , 400, 215 , 18*(8+pgInicial.logUser.getNombreCompleto().length()) , 50, "Dialog", 28, 250, pgInicial.bundle.getString("nombre")+pgInicial.logUser.getNombreCompleto());
-        titulo(lblApodo       , 400, 275 , (18*(7+pgInicial.logUser.getNombreUser().length()))+20 , 50, "Dialog", 28, 250, pgInicial.bundle.getString("apodo")+pgInicial.logUser.getNombreUser());
-        titulo(lblFechaIngreso, 400, 335 , 18*(18+pgInicial.logUser.getFechaRegistro().length()), 50, "Dialog", 28, 250, pgInicial.bundle.getString("fechaIngreso")+pgInicial.logUser.getFechaRegistro());
-        titulo(lblUltimaSesion, 400, 395 , 18*(15+pgInicial.logUser.getUltimaSesion().length()), 50, "Dialog", 28, 250, pgInicial.bundle.getString("ultimaSesion")+pgInicial.logUser.getUltimaSesion());
+        titulo(tituloPerfil   , 400, 10 , 250, 50, "Dialog", 28, 250, pgInicial.bundle.getString("perfilUsuario"));
+        titulo(lblPerfil      , 400, 70 , 100, 100, "Dialog", 28, 250, "");
+        titulo(lblNombre      , 400, 175 , 18*(8+pgInicial.logUser.getNombreCompleto().length()) , 50, "Dialog", 28, 250, pgInicial.bundle.getString("nombre")+pgInicial.logUser.getNombreCompleto());
+        titulo(lblApodo       , 400, 235 , (18*(7+pgInicial.logUser.getNombreUser().length()))+20 , 50, "Dialog", 28, 250, pgInicial.bundle.getString("apodo")+pgInicial.logUser.getNombreUser());
+        titulo(lblFechaIngreso, 400, 295 , 18*(18+pgInicial.logUser.getFechaRegistroFormateada().length()), 50, "Dialog", 28, 250, pgInicial.bundle.getString("fechaIngreso")+pgInicial.logUser.getFechaRegistroFormateada());
+        titulo(lblUltimaSesion, 400, 355 , 18*(15+pgInicial.logUser.getUltimaSesionFormateada().length()), 50, "Dialog", 28, 250, pgInicial.bundle.getString("ultimaSesion")+pgInicial.logUser.getUltimaSesionFormateada());
+        titulo(lblTiempoJugado, 400, 415 , 18*(13+pgInicial.logUser.getTiempoTotalFormateado().length())+50, 50, "Dialog", 28, 250, pgInicial.bundle.getString("tiempoJugado")+pgInicial.logUser.getTiempoTotalFormateado());
         
         lblPerfil.setIcon(scaleImage(perfil, 100, 100));
         boton(salir, 140, 180, 120, 50, false, false, "Dialog", 28, pgInicial.bundle.getString("volver"), 250);
         
+        frame.add(lblTiempoJugado); 
         frame.add(tituloPerfil);
         frame.add(lblPerfil);
         frame.add(salir);
@@ -248,12 +256,30 @@ public class PgPrincipal extends Grafico{
         frame.repaint();
         frame.revalidate();
         
+        Timer timerActualizarTiempo = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pgInicial.logUser.cierraSesion();
+                pgInicial.logUser.iniciaSesion();
+                String tiempoJugadoActualizado = pgInicial.logUser.getTiempoTotalFormateado();
+                lblTiempoJugado.setText(pgInicial.bundle.getString("tiempoJugado") + tiempoJugadoActualizado);
+            }
+        });
+        timerActualizarTiempo.start();
+        
         salir.addActionListener((ActionEvent e) -> {
-            
+            timerActualizarTiempo.stop();
             pgInicial.idiomaL.setBounds(10, 100 , (metrics.stringWidth(pgInicial.bundle.getString("silenciar"))), 50);
             pgInicial.muteCB.setBounds((metrics.stringWidth(pgInicial.bundle.getString("silenciar"))), 50, 50, 50);
             pgInicial.esCB.setBounds((metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial"))), 100, 50, 50);
             pgInicial.enCB.setBounds(metrics.stringWidth(pgInicial.bundle.getString("idiomaPgInicial")), 100, 50, 50);
+            
+            pgInicial.logUser.cierraSesion();
+            pgInicial.logUser.iniciaSesion();
+            String tiempoJugadoNuevo = pgInicial.logUser.getTiempoTotalFormateado();
+            lblTiempoJugado.setText(pgInicial.bundle.getString("tiempoJugado") + tiempoJugadoNuevo);
+            
+            frame.getContentPane().removeAll();
             
             frame.add(titulo,0);
             frame.add(btnIniciarPartida,1);
@@ -523,6 +549,8 @@ public class PgPrincipal extends Grafico{
             boton(btnRanking       , 380, 350, (metrics.stringWidth(pgInicial.bundle.getString("ranking")))+35        , 50, false, false, "Dialog", 28, pgInicial.bundle.getString("ranking"), 250);
             boton(btnSalir         , 380, 410, (metrics.stringWidth(pgInicial.bundle.getString("salirSesion")))+35    , 50, false, false, "Dialog", 28,pgInicial.bundle.getString("salirSesion"), 250);
             
+            frame.getContentPane().removeAll();
+            
             frame.add(titulo, 0);
             frame.add(btnIniciarPartida, 1);
             frame.add(btnPerfilUsuario, 2);
@@ -549,6 +577,8 @@ public class PgPrincipal extends Grafico{
         frame.revalidate();
         
         salir.addActionListener((ActionEvent e) -> {
+            frame.getContentPane().removeAll();
+            
             frame.add(titulo,0);
             frame.add(btnIniciarPartida,1);
             frame.add(btnPerfilUsuario,2);
@@ -574,6 +604,8 @@ public class PgPrincipal extends Grafico{
         frame.revalidate();
         
         salir.addActionListener((ActionEvent e) -> {
+            frame.getContentPane().removeAll();
+            
             frame.add(titulo,0);
             frame.add(btnIniciarPartida,1);
             frame.add(btnPerfilUsuario,2);

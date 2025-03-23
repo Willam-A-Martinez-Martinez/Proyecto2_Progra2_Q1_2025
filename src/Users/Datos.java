@@ -2,70 +2,74 @@ package Users;
 
 import java.io.Serializable;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 public class Datos implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String nombreUser, nombreCompleto, contraseña, avatar;
-    private Calendar fechaRegistro, ultimaSesion;
-    private Duration tiempoJugado;
-    private transient Instant juegoEmpieza;
-    
-    public Datos(String NombreUser, String NombreCompleto, String contraseña) {
-        this.nombreUser = NombreUser;
-        this.nombreCompleto = NombreCompleto;
+    private LocalDateTime fechaRegistro, ultimaSesion, inicioSesion, finSesion;
+    private Duration tiempoJugado; 
+
+    public Datos(String nombreUser, String nombreCompleto, String contraseña) {
+        this.nombreUser = nombreUser;
+        this.nombreCompleto = nombreCompleto;
         this.contraseña = contraseña;
-        avatar="";
-        this.fechaRegistro = Calendar.getInstance();
-        this.ultimaSesion = Calendar.getInstance();
+        this.avatar = "";
+        this.fechaRegistro = LocalDateTime.now();
+        this.ultimaSesion = LocalDateTime.now();
         this.tiempoJugado = Duration.ZERO;
     }
 
-    public void empiezaP() {
-        if (juegoEmpieza == null) {
-            juegoEmpieza = Instant.now();
-            System.out.println(nombreUser + " empezó a jugar.");
+    public void iniciaSesion() {
+        if (inicioSesion == null) {
+            this.inicioSesion = LocalDateTime.now();
+            System.out.println(nombreUser + " inició sesión el " + getInicioSesion());
         } else {
-            System.out.println("La sesión ya está en curso.");
+            System.out.println("Ya hay una sesión en curso.");
         }
     }
 
-    public void terminaP() {
-        if (juegoEmpieza != null) {
-            Instant parar = Instant.now();
-            Duration sessionTime = Duration.between(juegoEmpieza, parar);
-            tiempoJugado = tiempoJugado.plus(sessionTime);
-            actUltimaSesion();
+    public void cierraSesion() {
+        if (inicioSesion != null) {
+            this.finSesion = LocalDateTime.now();
+            Duration sesionActual = Duration.between(inicioSesion, finSesion);
+            this.tiempoJugado = this.tiempoJugado.plus(sesionActual);
+            this.ultimaSesion = finSesion;
+            inicioSesion = null; // Resetea para la próxima sesión
 
-            long minutos = tiempoJugado.toMinutes();
-            long segundos = tiempoJugado.toSecondsPart();
-
-            System.out.printf("%s paró de jugar. Tiempo total jugado: %d minutos y %d segundos.%n", 
-                               nombreUser, minutos, segundos);
-            juegoEmpieza = null;
+            System.out.println(nombreUser + " cerró sesión el " + getFinSesion());
+            System.out.println("Tiempo jugado en esta sesión: " + formatearDuracion(sesionActual));
+            System.out.println("Tiempo total jugado: " + getTiempoTotalFormateado());
         } else {
-            System.out.println("No se ha iniciado partida.");
+            System.out.println("No hay sesión iniciada.");
         }
     }
 
-    public void actUltimaSesion() {
-        this.ultimaSesion = Calendar.getInstance();
+    public String getInicioSesion() {
+        return (inicioSesion != null) ? formatearFecha(inicioSesion) : "No ha iniciado sesión";
     }
 
-    public long getTotalPlaytimeMinutes() {
-        return tiempoJugado.toMinutes();
+    public String getFinSesion() {
+        return (finSesion != null) ? formatearFecha(finSesion) : "No ha cerrado sesión";
     }
 
-    public String getFechaRegistro(){
-        int año=fechaRegistro.get(Calendar.YEAR), mes=fechaRegistro.get(Calendar.MONTH),dia=fechaRegistro.get(Calendar.DAY_OF_MONTH);
-        return dia+"/"+mes+"/"+año;
+    public String getTiempoTotalFormateado() {
+        return formatearDuracion(tiempoJugado);
     }
-    
-    public String getUltimaSesion() {
-        int año=ultimaSesion.get(Calendar.YEAR), mes=ultimaSesion.get(Calendar.MONTH),dia=ultimaSesion.get(Calendar.DAY_OF_MONTH);
-        return dia+"/"+mes+"/"+año;
+
+    private String formatearFecha(LocalDateTime fecha) {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return fecha.format(formato);
+    }
+
+    private String formatearDuracion(Duration duracion) {
+        long horas = duracion.toHours();
+        long minutos = duracion.toMinutesPart();
+        long segundos = duracion.toSecondsPart();
+        return String.format("%02d:%02d:%02d", horas, minutos, segundos);
     }
     
     public String getNombreCompleto() { return nombreCompleto; }
@@ -73,10 +77,15 @@ public class Datos implements Serializable {
     public String getNombreUser() { return nombreUser; }
     public String getAvatar() { return avatar;}
     public Duration getTiempoJugado() { return tiempoJugado; }
-
+    public LocalDateTime getFechaRegistro() {return fechaRegistro;}
+    public LocalDateTime getUltimaSesion() {return ultimaSesion;}
+    public String getFechaRegistroFormateada() {return formatearFecha(fechaRegistro);}
+    public String getUltimaSesionFormateada() {return formatearFecha(ultimaSesion);}
+    
     public void setNombreUser(String nombreUser) {this.nombreUser = nombreUser;}
     public void setContraseña(String contraseña) {this.contraseña = contraseña;}
     public void setAvatar(String avatar) {this.avatar = avatar;}
-    public void setUltimaSesion(Calendar nuevaSesion) {this.ultimaSesion = nuevaSesion;}
+    public void setUltimaSesion(LocalDateTime nuevaSesion) {this.ultimaSesion = nuevaSesion;}
+    
 }
 

@@ -5,6 +5,7 @@ import Users.Datos;
 import Users.ManejoAvatar;
 import Users.ManejoPreferencia;
 import Users.ManejoUser;
+import Users.Progreso;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import prueba_sprite.menu;
 
 public class PgInicial extends Grafico{
     JFrame frame = new JFrame();
@@ -37,20 +39,24 @@ public class PgInicial extends Grafico{
     //Info de usuarios
     public Datos logUser;
     
-    ManejoUser mUser;
-    ManejoAvatar mAvatar;
-    ManejoPreferencia mPreferencia;
-    Musica music;
+    public ManejoUser mUser;
+    public ManejoAvatar mAvatar;
+    public ManejoPreferencia mPreferencia;
+    Progreso progreso;
+    
+    public Musica music;
     
     private File archM = new File("src/Musica/happy 8bit.wav");
     
-    Locale locale;
-    ResourceBundle bundle;
+    public Locale locale;
+    public ResourceBundle bundle;
     
     public PgInicial(){
         mPreferencia = new ManejoPreferencia();
         mAvatar= new ManejoAvatar();
         mUser = new ManejoUser();
+        
+        menu.initializeWithPgInicial(this);
         
         music = new Musica();
         

@@ -1,5 +1,10 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package prueba_sprite;
 
+import GUI.PgInicial;
 import entidad.jugador;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -33,12 +38,14 @@ public class gamepanel extends JPanel implements Runnable {
     MovimientoTeclado movimiento = new MovimientoTeclado();
 
     Thread juegoTH;
-
-    public jugador esdras = new jugador(this, movimiento);
-    fileManager tileM = new fileManager(this);
+    PgInicial pgInicial;
+    public jugador esdras;
+    fileManager tileM;
     public CollisionCheker colision;
 
-    public gamepanel(int nivel) {
+    public gamepanel(int nivel,PgInicial pgInicial) {
+        esdras = new jugador(this, movimiento, pgInicial);
+        tileM  = new fileManager(this);
         this.nivel = nivel;
         System.out.println("El nivel en gamepanel es: " + this.nivel);
         this.setPreferredSize(new Dimension(pantallaancho, pantallalargo));

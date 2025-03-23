@@ -16,7 +16,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Musica {
     private Clip clip;
     float volumen1=-8,volumen2=0;
-    FloatControl fc;
+    public FloatControl fc;
     boolean mute;
     
     public void setMusic(File mcFile){
