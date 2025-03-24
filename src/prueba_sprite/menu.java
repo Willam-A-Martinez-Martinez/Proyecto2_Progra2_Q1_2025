@@ -1,10 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package prueba_sprite;
 
+import GUI.PgInicial;
+import GUI.PgPrincipal;
+import Users.Estadisticas;
+import Users.ManejoEstadisticas;
+import Users.Progreso;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,95 +22,190 @@ import javax.swing.JLabel;
  * @author 50488
  */
 public class menu extends JFrame {
+
     private static menu instancia;
     private int nivel = 0; // Inicializa en 0
     private JFrame ventanaJuego; // Almacena la ventana del juego
     private int nivel_actual = 1;
 
+    private JLabel fondo;
     private JButton crear_player;
     private JButton nivel_2;
-    private JButton salir;
+    private JButton nivel_3;
     private JButton nivel_4;
     private JButton nivel_5;
+    String usuario;
 
-    public menu() {
+    Font pixelMplus;
+    FontMetrics metrics;
+
+    private PgInicial pgInicial;
+    private static PgInicial staticPgInicial;
+
+    ImageIcon logoVentana = new ImageIcon("src/UI_Images/CajaCafeOscuro.png");
+    ImageIcon backGround = new ImageIcon("src/Assets/FondoMenu.gif");
+
+    public Estadisticas estadisticas;
+    
+    public void setUser(String user) {
+        this.usuario = user;
+        System.out.println("Usuario establecido: " + usuario);
+
+        // Load existing statistics for this user
+        ManejoEstadisticas mEstadisticas = new ManejoEstadisticas("Usuarios");
+        this.estadisticas = mEstadisticas.cargarEstadisticas(user);
+
+        Asignar_nivel();  // Cargar el nivel cuando se establece el usuario
+    }
+
+    public String getNombre() {
+        return usuario;
+    }
+
+    public void Asignar_nivel() {
+        if (usuario != null && !usuario.isEmpty()) {
+            nivel_actual = Progreso.obtenerInstancia().cargarNivel(usuario);
+            actualizarNiveles();  // Actualizar botones después de cargar el nivel
+        } else {
+            System.out.println("No se pudo cargar el nivel: usuario inválido.");
+        }
+    }
+
+    public menu(PgInicial pgInicial) {
+        this.pgInicial = pgInicial;
+        
+        if (staticPgInicial.logUser != null) {
+            String username = staticPgInicial.logUser.getNombreCompleto();
+            ManejoEstadisticas mEstadisticas = new ManejoEstadisticas("Usuarios");
+            this.estadisticas = mEstadisticas.cargarEstadisticas(username);
+        } else {
+            this.estadisticas = new Estadisticas();
+        }
+        
+        try {
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/PixelMplus-20130602/PixelMplus12-Bold.ttf"));
+            pixelMplus = pixelMplus.deriveFont(28f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(pixelMplus);
+        } catch (IOException | FontFormatException e) {
+
+        }
+
+        fondo = new JLabel();
+
+        if (staticPgInicial.logUser != null) {
+            System.out.println("Nombre de usuario: " + staticPgInicial.logUser.getNombreCompleto());
+        } else {
+            System.out.println("Usuario no iniciado sesión");
+        }
+
         setTitle("Menu de inicio");
-        setSize(400, 600);
+        setSize(1000, 700);
+        setIconImage(logoVentana.getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocationRelativeTo(null);
+        setFont(pixelMplus);
+
+        fondo.setBounds(0, 0, 1000, 700);
+        fondo.setIcon(backGround);
 
         Color summerWhite = new Color(0xFFFAF0);
         Color croissant = new Color(0xF1C27D);
         Color cayenne = new Color(0xE2583E);
 
         getContentPane().setBackground(summerWhite);
+        int xBtn = 111, yBtn = 115, y = 190, menuWidth = 400, frameWidth = getWidth(), x = (frameWidth - menuWidth) / 2;
 
-        JLabel menu = new JLabel("Bienvenido al menú de inicio de sokoban");
-        menu.setBounds(100, 10, 400, 30);
+        JLabel menu = new JLabel("Sokoban");
+        menu.setFont(pixelMplus);
+        menu.setBounds(x, 10, menuWidth, 30);
         menu.setForeground(cayenne);
         add(menu);
 
-        crear_player = new JButton("Nivel 1");
-        crear_player.setBounds(100, 90, 200, 30);
-        crear_player.setBackground(croissant);
-        crear_player.setForeground(cayenne);
+        crear_player = new JButton();
+        crear_player.setBounds(58, y, xBtn, yBtn);
+        crear_player.setBorder(null);
+        crear_player.setContentAreaFilled(false);
+        crear_player.setOpaque(false);
         add(crear_player);
 
-        nivel_2 = new JButton("Nivel 2");
-        nivel_2.setBounds(100, 180, 200, 30);
-        nivel_2.setBackground(croissant);
-        nivel_2.setForeground(cayenne);
+        nivel_2 = new JButton();
+        nivel_2.setBounds(250, y, xBtn, yBtn);
+        nivel_2.setBorder(null);
+        nivel_2.setContentAreaFilled(false);
+        nivel_2.setOpaque(false);
         add(nivel_2);
 
-        salir = new JButton("Nivel 3");
-        salir.setBounds(100, 270, 200, 30);
-        salir.setBackground(croissant);
-        salir.setForeground(cayenne);
-        add(salir);
+        nivel_3 = new JButton();
+        nivel_3.setBounds(450, y, xBtn, yBtn);
+        nivel_3.setBorder(null);
+        nivel_3.setContentAreaFilled(false);
+        nivel_3.setOpaque(false);
+        add(nivel_3);
 
-        nivel_4 = new JButton("Nivel 4");
-        nivel_4.setBounds(100, 360, 200, 30);
-        nivel_4.setBackground(croissant);
-        nivel_4.setForeground(cayenne);
+        nivel_4 = new JButton();
+        nivel_4.setBounds(638, y, xBtn, yBtn);
+        nivel_4.setBorder(null);
+        nivel_4.setContentAreaFilled(false);
+        nivel_4.setOpaque(false);
         add(nivel_4);
 
-        nivel_5 = new JButton("Nivel 5");
-        nivel_5.setBounds(100, 450, 200, 30);
-        nivel_5.setBackground(croissant);
-        nivel_5.setForeground(cayenne);
+        nivel_5 = new JButton();
+        nivel_5.setBounds(825, y, xBtn, yBtn);
+        nivel_5.setBorder(null);
+        nivel_5.setContentAreaFilled(false);
+        nivel_5.setOpaque(false);
         add(nivel_5);
-       
-        JButton salirse = new JButton("Nivel 5");
-        salirse.setBounds(100, 540, 200, 30);
-        salirse.setBackground(croissant);
-        salirse.setForeground(cayenne);
+
+        JButton salirse = new JButton();
+        salirse.setBounds(184, y + 150, xBtn, yBtn);
+        salirse.setBorder(null);
+        salirse.setContentAreaFilled(false);
+        salirse.setOpaque(false);
         add(salirse);
+
+        add(fondo);
 
         // Desactivar todos los niveles excepto el 1
         actualizarNiveles();
 
         // Asignar acciones a los botones
-        crear_player.addActionListener(e -> seleccionarNivel(1));
-        nivel_2.addActionListener(e -> seleccionarNivel(2));
-        salir.addActionListener(e -> seleccionarNivel(3));
-        nivel_4.addActionListener(e -> seleccionarNivel(4));
-        nivel_5.addActionListener(e -> seleccionarNivel(5));
-        salirse.addActionListener(e->{
-            
+        crear_player.addActionListener(e -> seleccionarNivel(1, estadisticas));
+        nivel_2.addActionListener(e -> seleccionarNivel(2,estadisticas));
+        nivel_3.addActionListener(e -> seleccionarNivel(3,estadisticas));
+        nivel_4.addActionListener(e -> seleccionarNivel(4,estadisticas));
+        nivel_5.addActionListener(e -> seleccionarNivel(5,estadisticas));
+        salirse.addActionListener(e -> {
+            PgPrincipal pgPrincipal = new PgPrincipal(pgInicial);
+            if (pgInicial.music.getVolumen1() == -40.0f) {
+                pgInicial.music.volumeMute();
+            }
+            pgInicial.music.fc.setValue(pgInicial.music.getVolumen1());
+            this.dispose();
         });
     }
 
     public void siguiente_nivel() {
-        if (nivel_actual < 5) {
-            nivel_actual++;
-        }
+    System.out.println("Nivel jugado: " + nivel);
+    System.out.println("Nivel actual desbloqueado: " + nivel_actual);
+
+    // Solo avanza si el jugador está en el nivel más alto alcanzado
+    if (nivel == nivel_actual && nivel_actual < 5) {  
+        
+        nivel_actual++;  
+        
+        System.out.println("¡Nuevo nivel desbloqueado! Ahora el nivel es: " + nivel_actual);
+        Progreso.obtenerInstancia().guardarNivel(usuario, nivel_actual); 
+        MovimientoTeclado.obtenerInstancia().guardarMovimientos();
+        actualizarNiveles();
     }
+}
 
     public void actualizarNiveles() {
         crear_player.setEnabled(nivel_actual >= 1);
         nivel_2.setEnabled(nivel_actual >= 2);
-        salir.setEnabled(nivel_actual >= 3);
+        nivel_3.setEnabled(nivel_actual >= 3);
         nivel_4.setEnabled(nivel_actual >= 4);
         nivel_5.setEnabled(nivel_actual >= 5);
     }
@@ -117,7 +220,11 @@ public class menu extends JFrame {
 
     public static menu getInstance() {
         if (instancia == null) {
-            instancia = new menu();
+            if (staticPgInicial != null) {
+                instancia = new menu(staticPgInicial);
+            } else {
+                throw new IllegalStateException("PgInicial not initialized. Call initializeWithPgInicial first.");
+            }
         }
         return instancia;
     }
@@ -126,10 +233,14 @@ public class menu extends JFrame {
         return nivel;
     }
 
-    private void seleccionarNivel(int nivelSeleccionado) {
-        this.nivel = nivelSeleccionado;
-        abrirJuego();
-    }
+ private void seleccionarNivel(int nivelSeleccionado, Estadisticas estadisticas) {
+    System.out.println("Seleccionando nivel: " + nivelSeleccionado);
+    System.out.println("Nivel actual desbloqueado antes de jugar: " + nivel_actual);
+
+    estadisticas.startGame(); // Uses the instance-specific stats
+    this.nivel = nivelSeleccionado;
+    abrirJuego();
+}
 
     public void abrirJuego() {
         System.out.println("Abriendo juego en nivel: " + this.nivel);
@@ -139,7 +250,7 @@ public class menu extends JFrame {
         ventanaJuego.setResizable(false);
         ventanaJuego.setTitle("MAPAS");
 
-        gamepanel xd = new gamepanel(this.nivel);
+        gamepanel xd = new gamepanel(this.nivel, pgInicial, this.estadisticas); // Use the instance-specific stats
         ventanaJuego.add(xd);
         ventanaJuego.pack();
 
@@ -156,5 +267,9 @@ public class menu extends JFrame {
             ventanaJuego = null;
         }
         this.setVisible(true);
+    }
+
+    public static void initializeWithPgInicial(PgInicial pgInicial) {
+        staticPgInicial = pgInicial;
     }
 }

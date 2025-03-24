@@ -15,8 +15,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Musica {
     private Clip clip;
-    float volumen1=0,volumen2=0;
-    FloatControl fc;
+    float volumen1=-8,volumen2=0;
+    public FloatControl fc;
     boolean mute;
     
     public void setMusic(File mcFile){
@@ -25,6 +25,7 @@ public class Musica {
             clip = AudioSystem.getClip();
             clip.open(ais);
             fc = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+            fc.setValue(volumen1);
             
         }catch(IOException | LineUnavailableException | UnsupportedAudioFileException e){
             e.printStackTrace();
@@ -53,13 +54,14 @@ public class Musica {
         if(mute==false){
             volumen1-=1;
             if(volumen1==-40.0f){
-                volumen1=-80.0f;
+                volumeMute();
             }
             fc.setValue(volumen1);
         }
     }
     public void volumeMute(){
         if(mute==false){
+            System.out.println("Volumen ha sido muteado");
             volumen2=volumen1;
             volumen1=-80.0f;
             fc.setValue(volumen1);
@@ -70,6 +72,15 @@ public class Musica {
             fc.setValue(volumen1);
             mute=false;
         }
+    }
+
+    public float getVolumen1() {
+        return volumen1;
+    }
+
+    public void setVolumen1(float volumen1) {
+        this.volumen1 = volumen1;
+        fc.setValue(volumen1);
     }
     
 }

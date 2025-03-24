@@ -4,6 +4,7 @@
  */
 package prueba_sprite;
 
+import Users.Estadisticas;
 import entidad.entidades;
 
 /**
@@ -19,7 +20,7 @@ public class CollisionCheker {
         this.gp = gp;
     }
 
-    public void checktile(entidades entity) {
+    public void checktile(entidades entity, Estadisticas estadisticas) {
         int entityLeftWorldX = entity.worldx + entity.solidArea.x;
         int entityRightWorldX = entity.worldx + entity.solidArea.x + entity.solidArea.width;
         int entityTopWorldY = entity.worldy + entity.solidArea.y;
@@ -69,15 +70,15 @@ public class CollisionCheker {
 
                 break;
 
-            case "de":
+            case "de": // Corrige la dirección 'de' a 'derecha' o 'right'
                 entityRightCol = (entityRightWorldX + entity.speed) / gp.tamanopersonaje;
-                tileNum1 = gp.tileM.maptilenum[entityRightCol][entityTopRow];
-                tileNum2 = gp.tileM.maptilenum[entityRightCol][entityTopRow];
+                tileNum1 = gp.tileM.maptilenum[entityRightCol][entityTopRow]; // Verificar la colisión en la fila superior
+                tileNum2 = gp.tileM.maptilenum[entityRightCol][entityButtonRow]; // Verificar la colisión en la fila inferior
                 if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
                     entity.collisionON = true;
                 }
                 cajaNuevaCol = entityRightCol + 1;
-                cajaNuevaRow = entityTopRow;
+                cajaNuevaRow = entityTopRow; // Asegúrate de que el valor de fila sea correcto en la dirección derecha
                 break;
 
         }
@@ -134,8 +135,7 @@ public class CollisionCheker {
                     break;
             }
 
-          
-            gp.tileM.moverCaja(nuevaCol, nuevaRow, cajaCol, cajaRow);
+            gp.tileM.moverCaja(nuevaCol, nuevaRow, cajaCol, cajaRow, estadisticas);
         }
 
     }

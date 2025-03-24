@@ -55,6 +55,7 @@ public class PropertiesFileCreator {
             properties.setProperty("cambioContraseña","Cambio de contraseña");
             properties.setProperty("ingreseContra","Ingrese contraseña");
             properties.setProperty("cambiarContra","Cambiar contraseña");
+            properties.setProperty("tiempoJugado","Tiempo total jugado: ");
         } else if ("en".equals(lang)) {
             properties.setProperty("sokoban","Sokoban");
             properties.setProperty("registrarse", "Sign up");
@@ -88,6 +89,7 @@ public class PropertiesFileCreator {
             properties.setProperty("cambioContraseña","Password change");
             properties.setProperty("ingreseContra","Enter password");
             properties.setProperty("cambiarContra","Change password");
+            properties.setProperty("tiempoJugado","Total gaming time: ");
         }
 
         try (FileOutputStream fos = new FileOutputStream(filePath)) {

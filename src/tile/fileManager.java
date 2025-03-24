@@ -4,6 +4,10 @@
  */
 package tile;
 
+import GUI.PgInicial;
+import Users.Estadisticas;
+import Users.ManejoEstadisticas;
+import Users.Progreso;
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +19,7 @@ import javax.swing.JOptionPane;
 import prueba_sprite.MovimientoTeclado;
 import prueba_sprite.gamepanel;
 import prueba_sprite.menu;
-import prueba_sprite.nivelxd;
+import Users.Ranking;
 
 /**
  *
@@ -23,17 +27,21 @@ import prueba_sprite.nivelxd;
  */
 public class fileManager {
 
+    private static fileManager instancia;
     gamepanel gp;
     public tiles[] tile;
     public int maptilenum[][];
     public String[][] mapTileString;
     public ArrayList<int[]> puntosPosiciones;
-    MovimientoTeclado xd = new MovimientoTeclado();
-    
+    MovimientoTeclado xd = MovimientoTeclado.obtenerInstancia();
 
+    Estadisticas estadisticas;
+    PgInicial pgInicial;
     String mapa = "";
 
-    public fileManager(gamepanel gp) {
+    public fileManager(gamepanel gp, PgInicial pgInicial, Estadisticas estadisticas) {
+        this.estadisticas = estadisticas;
+        this.pgInicial=pgInicial;
         this.gp = gp;
         tile = new tiles[10];
 
@@ -113,7 +121,7 @@ public class fileManager {
         }
     }
 
-    public void moverCaja(int nuevaCol, int nuevaRow, int cajaCol, int cajaRow) {
+    public void moverCaja(int nuevaCol, int nuevaRow, int cajaCol, int cajaRow, Estadisticas estadisticas) {
         if (nuevaCol < 0 || nuevaCol >= gp.maxWorldCol || nuevaRow < 0 || nuevaRow >= gp.maxWorldRow) {
             return;
         }
@@ -165,11 +173,27 @@ public class fileManager {
         if (ganado) {
             JOptionPane.showMessageDialog(null, "¡Ganaste!", "Victoria", JOptionPane.INFORMATION_MESSAGE);
 
+            if (xd.getUsuario() == null) {
+                System.out.println("ERROR: El usuario no está definido en MovimientoTeclado antes de guardar.");
+            } else {
+                xd.guardarMovimientos();
+            }
+            ManejoEstadisticas mEstadisticas = new ManejoEstadisticas("Usuarios");
+            Progreso progreso = new Progreso();
+            
+            
+            
             menu menuPrincipal = menu.getInstance();
             menuPrincipal.cerrar_juego();
             menuPrincipal.siguiente_nivel();
+            estadisticas.setTotalLevelsCompleted((progreso.cargarNivel(pgInicial.logUser.getNombreCompleto()))-1);
             menuPrincipal.actualizarNiveles();
             menuPrincipal.setVisible(true);
+            Ranking.obtenerInstancia().organizarRanking();
+
+            estadisticas.endGame();
+            
+            mEstadisticas.guardarEstadisticas(pgInicial.logUser.getNombreCompleto(), estadisticas);
             System.out.println(xd.getMovimiento());
         }
     }
@@ -222,4 +246,5 @@ public class fileManager {
         }
 
     }
+
 }

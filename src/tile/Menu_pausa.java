@@ -4,15 +4,14 @@
  */
 package tile;
 
+import GUI.PgInicial;
+import Users.Estadisticas;
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import prueba_sprite.MovimientoTeclado;
 import prueba_sprite.menu;
 
 /**
@@ -20,9 +19,14 @@ import prueba_sprite.menu;
  * @author 50488
  */
 public class Menu_pausa extends JFrame {
-menu menuu = new menu();
+    PgInicial pgInicial;
+    Estadisticas estadisticas;
+    menu menuu;
  private static boolean salirJuego = false; 
-    public Menu_pausa() {
+    public Menu_pausa(Estadisticas estadisticas) {
+        this.estadisticas=estadisticas;
+        
+        menuu = new menu(pgInicial);
         setTitle("Menu de Pausa");
         setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // No cierra toda la aplicación
@@ -55,19 +59,7 @@ menu menuu = new menu();
         nivel_2.setForeground(cayenne);
         add(nivel_2);
 
-        // Botón "Nivel 4"
-        JButton nivel_4 = new JButton("Nivel 4");
-        nivel_4.setBounds(100, 270, 200, 30);
-        nivel_4.setBackground(croissant);
-        nivel_4.setForeground(cayenne);
-        add(nivel_4);
-
-        // Botón "Nivel 5"
-        JButton nivel_5 = new JButton("Nivel 5");
-        nivel_5.setBounds(100, 360, 200, 30);
-        nivel_5.setBackground(croissant);
-        nivel_5.setForeground(cayenne);
-        add(nivel_5);
+       
 
         // Botón "Salir"
         JButton salir = new JButton("SALIR");
@@ -105,17 +97,7 @@ menu menuu = new menu();
             menu.getInstance().abrirJuego();
         });
 
-        // Acción para "Nivel 4" (implementar lógica)
-        nivel_4.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Cargando Nivel 4...");
-            // Implementar lógica de carga del nivel 4
-        });
-
-        // Acción para "Nivel 5" (implementar lógica)
-        nivel_5.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Cargando Nivel 5...");
-            // Implementar lógica de carga del nivel 5
-        });
+        
     }
     
   

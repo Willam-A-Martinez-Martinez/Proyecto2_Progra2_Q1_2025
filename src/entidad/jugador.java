@@ -4,7 +4,8 @@
  */
 package entidad;
 
-import java.awt.Color;
+import GUI.PgInicial;
+import Users.Estadisticas;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -24,8 +25,13 @@ public class jugador extends entidades {
     MovimientoTeclado mt;
     public final int screenY;
     public final int screenX;
+    
+    PgInicial pgInicial;
+    Estadisticas estadisticas;
 
-    public jugador(gamepanel gp, MovimientoTeclado mt) {
+    public jugador(gamepanel gp, MovimientoTeclado mt, PgInicial pgInicial) {
+        this.estadisticas=estadisticas;
+        this.pgInicial=pgInicial;
         this.gp = gp;
         this.mt = mt;
         screenX = gp.pantallaancho / 2 - (gp.tamanopersonaje / 2);
@@ -127,7 +133,7 @@ public class jugador extends entidades {
             }
             collisionON = false;
             if (gp.colision != null) {
-                gp.colision.checktile(this);
+                gp.colision.checktile(this, estadisticas);
             }
 
             //if collision is false, player can move 

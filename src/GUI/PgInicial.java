@@ -2,31 +2,24 @@ package GUI;
 
 
 import Users.Datos;
+import Users.Estadisticas;
 import Users.ManejoAvatar;
+import Users.ManejoEstadisticas;
+import Users.ManejoPreferencia;
 import Users.ManejoUser;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
+import Users.Progreso;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import prueba_sprite.MovimientoTeclado;
+import prueba_sprite.menu;
 
 public class PgInicial extends Grafico{
     JFrame frame = new JFrame();
@@ -49,19 +42,31 @@ public class PgInicial extends Grafico{
     //Info de usuarios
     public Datos logUser;
     
-    ManejoUser mUser;
-    ManejoAvatar mAvatar;
-    Musica music;
+    public ManejoUser mUser;
+    public ManejoAvatar mAvatar;
+    public ManejoPreferencia mPreferencia;
+    public ManejoEstadisticas mEstadisticas;
+    public Estadisticas estadisticas;
+    
+    Progreso progreso;
+    
+    public Musica music;
     
     private File archM = new File("src/Musica/happy 8bit.wav");
     
-    Locale locale;
-    ResourceBundle bundle;
+    public Locale locale;
+    public ResourceBundle bundle;
     
     public PgInicial(){
-        
+        mPreferencia = new ManejoPreferencia();
         mAvatar= new ManejoAvatar();
         mUser = new ManejoUser();
+        mEstadisticas = new ManejoEstadisticas("Usuarios");
+        estadisticas = new Estadisticas();
+        
+  
+        menu.initializeWithPgInicial(this);
+        
         music = new Musica();
         
         music.setMusic(archM);

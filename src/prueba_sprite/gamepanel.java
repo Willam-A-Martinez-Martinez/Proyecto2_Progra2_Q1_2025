@@ -4,6 +4,8 @@
  */
 package prueba_sprite;
 
+import GUI.PgInicial;
+import Users.Estadisticas;
 import entidad.jugador;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,15 +36,20 @@ public class gamepanel extends JPanel implements Runnable {
     public final int worldHeight = tamanopersonaje * maxWorldRow;
     int FPS = 60;
 
-    MovimientoTeclado movimiento = new MovimientoTeclado();
+    MovimientoTeclado movimiento = MovimientoTeclado.obtenerInstancia();
 
     Thread juegoTH;
-
-    public jugador esdras = new jugador(this, movimiento);
-    fileManager tileM = new fileManager(this);
+    PgInicial pgInicial;
+    public jugador esdras;
+    fileManager tileM;
     public CollisionCheker colision;
+    
+    Estadisticas estadisticas;
 
-    public gamepanel(int nivel) {
+    public gamepanel(int nivel,PgInicial pgInicial, Estadisticas estadisticas) {
+        this.estadisticas=estadisticas;
+        esdras = new jugador(this, movimiento, pgInicial);
+        tileM  = new fileManager(this, pgInicial, estadisticas);
         this.nivel = nivel;
         System.out.println("El nivel en gamepanel es: " + this.nivel);
         this.setPreferredSize(new Dimension(pantallaancho, pantallalargo));

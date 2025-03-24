@@ -24,9 +24,9 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
     
 public class Grafico {
     ImageIcon logoVentana = new ImageIcon("src/UI_Images/CajaCafeOscuro.png");
+    private int r=76,g=70,b=66;
     Font pixelMplus;
     FontMetrics metrics;
-    private int r=76,g=70,b=66;
     
     public Grafico(){
         try{
@@ -88,6 +88,7 @@ public class Grafico {
         a.setBounds(x, y, width, heigth);
         a.setText("");
         a.setFont(pixelMplus);
+        a.setEchoChar('*');
     }
     
     public void boton(JButton a,int x, int y, int width, int heigth, boolean setBorderPainted, boolean setContentAreaFilled, String font, int size, String texto, int opaque){

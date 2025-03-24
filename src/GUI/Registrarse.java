@@ -5,6 +5,8 @@
 package GUI;
 
 import Users.Datos;
+import prueba_sprite.MovimientoTeclado;
+import Users.Progreso;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.swing.ImageIcon;
@@ -14,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import prueba_sprite.menu;
+import Users.Ranking;
 
 /**
  *
@@ -125,27 +129,35 @@ public class Registrarse extends Grafico{
             String nombreUser = nombreUserTxtF.getText().trim();
             String nombreC = nombreCTxtF.getText().trim();
             String contra = new String(contraseñaTxtF.getPassword()).trim();
-            
 
-            System.out.println("DEBUG: Username=[" + nombreUser + "], Full Name=[" + nombreC + "], Password=[" + contra + "]"+", Avatar ="+rutaAvatar);
+            if (!nombreUser.equals("") && !nombreC.equals("") && !contra.equals("")) {
+                Ranking ranking = Ranking.obtenerInstancia();
+                ranking.guardarUsuario(nombreC);
+                Progreso progreso = Progreso.obtenerInstancia();
+                MovimientoTeclado movimientos = MovimientoTeclado.obtenerInstancia();
+                movimientos.setUsuario(nombreC);
+                movimientos.cargarMovimientosPersistentes();
+                movimientos.inicializarMovimientos();
+                progreso.guardarProgreso(nombreC);//  aqui 
+                menu m = menu.getInstance();
+                m.setUser(nombreC);
+                
+                if (pgInicial.mUser.agregarUsuario(nombreUser, nombreC, contra)) {
+                    pgInicial.mPreferencia.guardarPreferenciasUser(pgInicial.locale.toString(), pgInicial.music.getVolumen1(), nombreC);
+                    // Save the image first
+                    String avatarPath = pgInicial.mUser.guardarImagen(rutaAvatar, nombreC);
 
-            if(!nombreUser.equals("") || !nombreC.equals("") || !contra.equals("")){
-                if(pgInicial.mUser.agregarUsuario(nombreUser, nombreC, contra, rutaAvatar)){
-                    
-                    System.out.println("Ruta de avatar despues de acceder a registrarse: "+rutaAvatar);
-                    
-                   PgPrincipal pgP = new PgPrincipal(pgInicial);
-                   pgP.frame.setVisible(true);
-                   pgInicial.logUser = pgInicial.mUser.cargaUsuario(nombreC);
-                   System.out.println("Ruta que aparece con el user guardado: "+pgInicial.logUser.getAvatar());
+                    // Then load the user (which will now include the updated avatar path)
+                    pgInicial.logUser = pgInicial.mUser.cargaUsuario(nombreC);
 
-                   if(pgInicial.logUser==null){
-                        System.out.println("Log user es null");
-                   }else{
-                       System.out.println("Contra de user: "+pgInicial.logUser.getContraseña());
-                       System.out.println("Nombre completo de usar: "+pgInicial.logUser.getNombreCompleto());
-                   }
-                   frame.dispose();
+                    // Debug: Verify the avatar path was set correctly
+                    if (pgInicial.logUser != null) {
+                        System.out.println("Avatar cargado: " + pgInicial.logUser.getAvatar());
+                    }
+                    pgInicial.mUser.iniciaSesionUsuario(nombreC);
+                    PgPrincipal pgP = new PgPrincipal(pgInicial);
+                    pgP.frame.setVisible(true);
+                    frame.dispose();
                 }
                 nombreUserTxtF.setText("");
                 nombreCTxtF.setText("");
