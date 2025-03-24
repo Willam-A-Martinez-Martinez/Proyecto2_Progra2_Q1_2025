@@ -21,9 +21,9 @@ public class Menu_pausa extends JFrame {
     PgInicial pgInicial;
     menu menuu;
  private static boolean salirJuego = false; 
-    public Menu_pausa(PgInicial pgInicial) {
-        this.pgInicial=pgInicial;
-        menuu = new menu(pgInicial);
+    public Menu_pausa() {
+        ;
+        menuu = new menu();
         setTitle("Menu de Pausa");
         setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // No cierra toda la aplicación

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package prueba_sprite;
 
 import GUI.PgInicial;
@@ -20,14 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-/**
- *
- * @author 50488
- */
 public class menu extends JFrame {
     private static menu instancia;
-    private int nivel = 0; // Inicializa en 0
-    private JFrame ventanaJuego; // Almacena la ventana del juego
+    private int nivel = 0;
+    private JFrame ventanaJuego;
     private int nivel_actual = 1;
 
     private JLabel fondo;
@@ -36,13 +28,15 @@ public class menu extends JFrame {
     private JButton nivel_3;
     private JButton nivel_4;
     private JButton nivel_5;
+    private JButton salirse;
     String usuario;
 
     Font pixelMplus;
     FontMetrics metrics;
     
-    private PgInicial pgInicial;
-    private static PgInicial staticPgInicial;
+    Estadisticas estadisticas = new Estadisticas();
+    
+    PgInicial pgInicial;
 
     ImageIcon logoVentana = new ImageIcon("src/UI_Images/CajaCafeOscuro.png");
     ImageIcon backGround = new ImageIcon("src/Assets/FondoMenu.gif");
@@ -50,7 +44,7 @@ public class menu extends JFrame {
     public void setUser(String user) {
         this.usuario = user;
         System.out.println("Usuario establecido: " + usuario);
-        Asignar_nivel();  // Cargar el nivel cuando se establece el usuario
+        Asignar_nivel();
     }
 
     public String getNombre() {
@@ -60,32 +54,24 @@ public class menu extends JFrame {
     public void Asignar_nivel() {
         if (usuario != null && !usuario.isEmpty()) {
             nivel_actual = Progreso.obtenerInstancia().cargarNivel(usuario);
-            actualizarNiveles();  // Actualizar botones después de cargar el nivel
+            actualizarNiveles();
         } else {
             System.out.println("No se pudo cargar el nivel: usuario inválido.");
         }
     }
     
-    public menu(PgInicial pgInicial) {
+    public menu(Estadisticas estadisticas) {
         try{
             pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/PixelMplus-20130602/PixelMplus12-Bold.ttf"));
             pixelMplus = pixelMplus.deriveFont(28f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(pixelMplus);
         }catch(IOException | FontFormatException e){
-            
         }
         
         fondo = new JLabel();
         
-        this.pgInicial = pgInicial;
-        
-        
-        if (staticPgInicial.logUser != null) {
-            System.out.println("Nombre de usuario: " + staticPgInicial.logUser.getNombreCompleto());
-        } else {
-            System.out.println("Usuario no iniciado sesión");
-        }
+        this.estadisticas = estadisticas;
         
         setTitle("Menu de inicio");
         setSize(1000, 700);
@@ -99,12 +85,10 @@ public class menu extends JFrame {
         fondo.setIcon(backGround);
 
         Color summerWhite = new Color(0xFFFAF0);
-        Color croissant = new Color(0xF1C27D);
         Color cayenne = new Color(0xE2583E);
 
         getContentPane().setBackground(summerWhite);
-        int xBtn = 111,yBtn= 115, y=190, menuWidth = 400, frameWidth = getWidth(), x = (frameWidth - menuWidth) / 2;
-        
+        int xBtn = 111, yBtn = 115, y = 190, menuWidth = 400, frameWidth = getWidth(), x = (frameWidth - menuWidth) / 2;
         
         JLabel menu = new JLabel("Sokoban");
         menu.setFont(pixelMplus);
@@ -112,7 +96,6 @@ public class menu extends JFrame {
         menu.setForeground(cayenne);
         add(menu);
 
-        
         crear_player = new JButton();
         crear_player.setBounds(58, y, xBtn, yBtn);
         crear_player.setBorder(null);
@@ -147,8 +130,8 @@ public class menu extends JFrame {
         nivel_5.setContentAreaFilled(false);
         nivel_5.setOpaque(false);
         add(nivel_5);
-       
-        JButton salirse = new JButton();
+
+        salirse = new JButton();
         salirse.setBounds(184, y+150, xBtn, yBtn);
         salirse.setBorder(null);
         salirse.setContentAreaFilled(false);
@@ -157,31 +140,25 @@ public class menu extends JFrame {
         
         add(fondo);
         
-        // Desactivar todos los niveles excepto el 1
         actualizarNiveles();
 
-        // Asignar acciones a los botones
         crear_player.addActionListener(e -> seleccionarNivel(1));
         nivel_2.addActionListener(e -> seleccionarNivel(2));
         nivel_3.addActionListener(e -> seleccionarNivel(3));
         nivel_4.addActionListener(e -> seleccionarNivel(4));
         nivel_5.addActionListener(e -> seleccionarNivel(5));
-        salirse.addActionListener(e->{
+        salirse.addActionListener(e -> {
             PgPrincipal pgPrincipal = new PgPrincipal(pgInicial);
-            if(pgInicial.music.getVolumen1()==-40.0f){
-                pgInicial.music.volumeMute();
-            }
-            pgInicial.music.fc.setValue(pgInicial.music.getVolumen1());
             this.dispose();
         });
     }
 
-    public void siguiente_nivel(PgInicial pgInicial) {
+    public void siguiente_nivel() {
         if (nivel_actual < 5) {
             nivel_actual++;
-             Progreso.obtenerInstancia().guardarNivel(usuario, nivel_actual); 
-             MovimientoTeclado.obtenerInstancia(pgInicial).guardarMovimientos();
-             actualizarNiveles();
+            Progreso.obtenerInstancia().guardarNivel(usuario, nivel_actual);
+            MovimientoTeclado.obtenerInstancia().guardarMovimientos();
+            actualizarNiveles();
         }
     }
 
@@ -197,27 +174,8 @@ public class menu extends JFrame {
         return nivel_actual;
     }
 
-    public void setNivel(int nivel) {
-        nivel_actual = nivel;
-    }
-
-    public static menu getInstance() {
-        if (instancia == null) {
-            if (staticPgInicial != null) {
-                instancia = new menu(staticPgInicial);
-            } else {
-                throw new IllegalStateException("PgInicial not initialized. Call initializeWithPgInicial first.");
-            }
-        }
-        return instancia;
-    }
-
-    public int getnivel() {
-        return nivel;
-    }
-
     private void seleccionarNivel(int nivelSeleccionado) {
-        staticPgInicial.estadisticas.startGame();
+        estadisticas.startGame();
         this.nivel = nivelSeleccionado;
         abrirJuego();
     }
@@ -230,7 +188,7 @@ public class menu extends JFrame {
         ventanaJuego.setResizable(false);
         ventanaJuego.setTitle("MAPAS");
 
-        gamepanel xd = new gamepanel(this.nivel, pgInicial);
+        gamepanel xd = new gamepanel(this.nivel);
         ventanaJuego.add(xd);
         ventanaJuego.pack();
 
@@ -247,9 +205,5 @@ public class menu extends JFrame {
             ventanaJuego = null;
         }
         this.setVisible(true);
-    }
-    
-    public static void initializeWithPgInicial(PgInicial pgInicial) {
-        staticPgInicial = pgInicial;
     }
 }

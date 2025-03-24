@@ -192,7 +192,7 @@ public class MovimientoTeclado implements KeyListener {
         System.out.println("Movimientos actuales: " + cant_move);
 
         if (code == KeyEvent.VK_M) {
-            new Menu_pausa(pgInicial).setVisible(true);
+            new Menu_pausa().setVisible(true);
         }
     }
     

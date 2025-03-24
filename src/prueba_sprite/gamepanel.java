@@ -43,8 +43,7 @@ public class gamepanel extends JPanel implements Runnable {
     fileManager tileM;
     public CollisionCheker colision;
 
-    public gamepanel(int nivel, PgInicial pgInicial) {
-        this.pgInicial = pgInicial;
+    public gamepanel(int nivel) {
         this.nivel = nivel;
         this.setPreferredSize(new Dimension(pantallaancho, pantallalargo));
         this.setBackground(Color.BLACK);
